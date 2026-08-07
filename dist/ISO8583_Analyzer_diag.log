@@ -1,0 +1,377 @@
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE VALIDACIÓN ISO8583 ===
+RAW: 'False'
+CLEAN: 'Fae'
+INVALID:
+  Carácter inválido: 'l'
+  Unicode: 0x006C
+  Posición: 2
+  Carácter inválido: 's'
+  Unicode: 0x0073
+  Posición: 3
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 0037 (55 bytes)
+Header pre-MTI: 00376080000001 (7 bytes)
+TPDU: 6080000001 (destino=6080 origen=0000 control=01)
+MTI encontrado: 0810 (offset byte 7)
+Bitmap encontrado: 2020000000800013 (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE41: offset byte 23 (hex 46), longitud esperada 8, leída 8, siguiente byte 31
+DE60: offset byte 31 (hex 62), longitud esperada 999, leída 6, siguiente byte 35
+DE63: offset byte 35 (hex 70), longitud esperada 999, leída 13, siguiente byte 49
+DE64: offset byte 49 (hex 98), longitud esperada 8, leída 8, siguiente byte 57
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 0037 (55 bytes)
+Header pre-MTI: 00376080000001 (7 bytes)
+TPDU: 6080000001 (destino=6080 origen=0000 control=01)
+MTI encontrado: 0810 (offset byte 7)
+Bitmap encontrado: 2020000000800013 (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE41: offset byte 23 (hex 46), longitud esperada 8, leída 8, siguiente byte 31
+DE60: offset byte 31 (hex 62), longitud esperada 999, leída 6, siguiente byte 35
+DE63: offset byte 35 (hex 70), longitud esperada 999, leída 13, siguiente byte 49
+DE64: offset byte 49 (hex 98), longitud esperada 8, leída 8, siguiente byte 57
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 0037 (55 bytes)
+Header pre-MTI: 00376080000001 (7 bytes)
+TPDU: 6080000001 (destino=6080 origen=0000 control=01)
+MTI encontrado: 0810 (offset byte 7)
+Bitmap encontrado: 2020000000800013 (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE41: offset byte 23 (hex 46), longitud esperada 8, leída 8, siguiente byte 31
+DE60: offset byte 31 (hex 62), longitud esperada 999, leída 6, siguiente byte 35
+DE63: offset byte 35 (hex 70), longitud esperada 999, leída 13, siguiente byte 49
+DE64: offset byte 49 (hex 98), longitud esperada 8, leída 8, siguiente byte 57
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 0037 (55 bytes)
+Header pre-MTI: 00376080000001 (7 bytes)
+TPDU: 6080000001 (destino=6080 origen=0000 control=01)
+MTI encontrado: 0810 (offset byte 7)
+Bitmap encontrado: 2020000000800013 (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE41: offset byte 23 (hex 46), longitud esperada 8, leída 8, siguiente byte 31
+DE60: offset byte 31 (hex 62), longitud esperada 999, leída 6, siguiente byte 35
+DE63: offset byte 35 (hex 70), longitud esperada 999, leída 13, siguiente byte 49
+DE64: offset byte 49 (hex 98), longitud esperada 8, leída 8, siguiente byte 57
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 01be (446 bytes)
+Header pre-MTI: 01be6000018000 (7 bytes)
+TPDU: 6000018000 (destino=6000 origen=0180 control=00)
+MTI encontrado: 0200 (offset byte 7)
+Bitmap encontrado: b038464120c18210 (offset byte 9)
+Bitmap secundario: 0000000000014302 (offset byte 17)
+DE2 comienza en: byte 25 (posición hex 50)
+DE3: offset byte 25 (hex 50), longitud esperada 6, leída 6, siguiente byte 28
+DE4: offset byte 28 (hex 56), longitud esperada 12, leída 12, siguiente byte 34
+DE11: offset byte 34 (hex 68), longitud esperada 6, leída 6, siguiente byte 37
+DE12: offset byte 37 (hex 74), longitud esperada 6, leída 6, siguiente byte 40
+DE13: offset byte 40 (hex 80), longitud esperada 4, leída 4, siguiente byte 42
+DE18: offset byte 42 (hex 84), longitud esperada 4, leída 4, siguiente byte 44
+DE22: offset byte 44 (hex 88), longitud esperada 3, leída 3, siguiente byte 46
+DE23: offset byte 46 (hex 92), longitud esperada 3, leída 3, siguiente byte 48
+DE26: offset byte 48 (hex 96), longitud esperada 4, leída 4, siguiente byte 50
+DE32: offset byte 50 (hex 100), longitud esperada 11, leída 17, siguiente byte 60
+DE35: offset byte 60 (hex 120), longitud esperada 37, leída 12, siguiente byte 73
+DE41: offset byte 73 (hex 146), longitud esperada 8, leída 8, siguiente byte 81
+DE42: offset byte 81 (hex 162), longitud esperada 15, leída 15, siguiente byte 96
+DE48: offset byte 96 (hex 192), longitud esperada 999, leída 1, siguiente byte 99
+DE49: offset byte 99 (hex 198), longitud esperada 3, leída 3, siguiente byte 101
+DE55: offset byte 101 (hex 202), longitud esperada 999, leída 364, siguiente byte 285
+DE60: offset byte 285 (hex 570), longitud esperada 999, leída 30, siguiente byte 301
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 02f0 (752 bytes)
+Header pre-MTI: 02f06000000000 (7 bytes)
+TPDU: 6000000000 (destino=6000 origen=0000 control=00)
+MTI encontrado: 0800 (offset byte 7)
+Bitmap encontrado: 2020000000800013 (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE41: offset byte 23 (hex 46), longitud esperada 8, leída 8, siguiente byte 31
+DE60: offset byte 31 (hex 62), longitud esperada 999, leída 0, siguiente byte 32
+DE63: offset byte 32 (hex 64), longitud esperada 999, leída 58, siguiente byte 91
+DE64: offset byte 91 (hex 182), longitud esperada 8, leída 8, siguiente byte 99
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Manual
+Offset inicial usado (bytes antes del MTI): 5
+Longitud: 02f0 (752 bytes)
+Header pre-MTI: 02f0600000 (5 bytes)
+MTI encontrado: 0000 (offset byte 5)
+Bitmap encontrado: 0800202000000080 (offset byte 7)
+DE2 comienza en: byte 15 (posición hex 30)
+DE5: offset byte 15 (hex 30), longitud esperada 12, leída 12, siguiente byte 21
+DE19: offset byte 21 (hex 42), longitud esperada 3, leída 3, siguiente byte 23
+DE27: offset byte 23 (hex 46), longitud esperada 1, leída 1, siguiente byte 24
+DE57: offset byte 24 (hex 48), longitud esperada 3, leída 3, siguiente byte 26
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Manual
+Offset inicial usado (bytes antes del MTI): 6
+Longitud: 02f0 (752 bytes)
+Header pre-MTI: 02f060000000 (6 bytes)
+MTI encontrado: 0008 (offset byte 6)
+Bitmap encontrado: 0020200000008000 (offset byte 8)
+DE2 comienza en: byte 16 (posición hex 32)
+DE11: offset byte 16 (hex 32), longitud esperada 6, leída 6, siguiente byte 19
+DE19: offset byte 19 (hex 38), longitud esperada 3, leída 3, siguiente byte 21
+DE49: offset byte 21 (hex 42), longitud esperada 3, leída 3, siguiente byte 23
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Manual
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 02f0 (752 bytes)
+Header pre-MTI: 02f06000000000 (7 bytes)
+TPDU: 6000000000 (destino=6000 origen=0000 control=00)
+MTI encontrado: 0800 (offset byte 7)
+Bitmap encontrado: 2020000000800013 (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE41: offset byte 23 (hex 46), longitud esperada 8, leída 8, siguiente byte 31
+DE60: offset byte 31 (hex 62), longitud esperada 999, leída 0, siguiente byte 32
+DE63: offset byte 32 (hex 64), longitud esperada 999, leída 58, siguiente byte 91
+DE64: offset byte 91 (hex 182), longitud esperada 8, leída 8, siguiente byte 99
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 017c (380 bytes)
+Header pre-MTI: 017c6000000000 (7 bytes)
+TPDU: 6000000000 (destino=6000 origen=0000 control=00)
+MTI encontrado: 0810 (offset byte 7)
+Bitmap encontrado: 202000000280001c (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE39: offset byte 23 (hex 46), longitud esperada 3, leída 3, siguiente byte 25
+DE41: offset byte 25 (hex 50), longitud esperada 8, leída 8, siguiente byte 33
+DE60: offset byte 33 (hex 66), longitud esperada 999, leída 0, siguiente byte 34
+DE61: offset byte 34 (hex 68), longitud esperada 999, leída 585, siguiente byte 328
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 017c (380 bytes)
+Header pre-MTI: 017c6000000000 (7 bytes)
+TPDU: 6000000000 (destino=6000 origen=0000 control=00)
+MTI encontrado: 0810 (offset byte 7)
+Bitmap encontrado: 202000000280001c (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE39: offset byte 23 (hex 46), longitud esperada 3, leída 3, siguiente byte 25
+DE41: offset byte 25 (hex 50), longitud esperada 8, leída 8, siguiente byte 33
+DE60: offset byte 33 (hex 66), longitud esperada 999, leída 0, siguiente byte 34
+DE61: offset byte 34 (hex 68), longitud esperada 999, leída 585, siguiente byte 328
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Manual
+Offset inicial usado (bytes antes del MTI): 6
+Longitud: 017c (380 bytes)
+Header pre-MTI: 017c60000000 (6 bytes)
+MTI encontrado: 0008 (offset byte 6)
+Bitmap encontrado: 1020200000028000 (offset byte 8)
+DE2 comienza en: byte 16 (posición hex 32)
+DE4: offset byte 16 (hex 32), longitud esperada 12, leída 12, siguiente byte 22
+DE11: offset byte 22 (hex 44), longitud esperada 6, leída 6, siguiente byte 25
+DE19: offset byte 25 (hex 50), longitud esperada 3, leída 3, siguiente byte 27
+DE47: offset byte 27 (hex 54), longitud esperada 999, leída 323, siguiente byte 352
+DE49: offset byte 352 (hex 704), longitud esperada 3, leída 3, siguiente byte 354
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Manual
+Offset inicial usado (bytes antes del MTI): 4
+Longitud: 017c (380 bytes)
+Header pre-MTI: 017c6000 (4 bytes)
+MTI encontrado: 0000 (offset byte 4)
+Bitmap encontrado: 0008102020000002 (offset byte 6)
+DE2 comienza en: byte 14 (posición hex 28)
+DE13: offset byte 14 (hex 28), longitud esperada 4, leída 4, siguiente byte 16
+DE20: offset byte 16 (hex 32), longitud esperada 3, leída 3, siguiente byte 18
+DE27: offset byte 18 (hex 36), longitud esperada 1, leída 1, siguiente byte 19
+DE35: offset byte 19 (hex 38), longitud esperada 37, leída 1, siguiente byte 21
+DE63: offset byte 21 (hex 42), longitud esperada 999, leída 1, siguiente byte 23
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 017c (380 bytes)
+Header pre-MTI: 017c6000000000 (7 bytes)
+TPDU: 6000000000 (destino=6000 origen=0000 control=00)
+MTI encontrado: 0810 (offset byte 7)
+Bitmap encontrado: 202000000280001c (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE39: offset byte 23 (hex 46), longitud esperada 3, leída 3, siguiente byte 25
+DE41: offset byte 25 (hex 50), longitud esperada 8, leída 8, siguiente byte 33
+DE60: offset byte 33 (hex 66), longitud esperada 999, leída 0, siguiente byte 34
+DE61: offset byte 34 (hex 68), longitud esperada 999, leída 585, siguiente byte 328
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 017c (380 bytes)
+Header pre-MTI: 017c6000000000 (7 bytes)
+TPDU: 6000000000 (destino=6000 origen=0000 control=00)
+MTI encontrado: 0810 (offset byte 7)
+Bitmap encontrado: 202000000280001c (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE39: offset byte 23 (hex 46), longitud esperada 3, leída 3, siguiente byte 25
+DE41: offset byte 25 (hex 50), longitud esperada 8, leída 8, siguiente byte 33
+DE60: offset byte 33 (hex 66), longitud esperada 999, leída 0, siguiente byte 34
+DE61: offset byte 34 (hex 68), longitud esperada 999, leída 585, siguiente byte 328
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 02f0 (752 bytes)
+Header pre-MTI: 02f06000000000 (7 bytes)
+TPDU: 6000000000 (destino=6000 origen=0000 control=00)
+MTI encontrado: 0800 (offset byte 7)
+Bitmap encontrado: 2020000000800013 (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset byte 17 (hex 34), longitud esperada 6, leída 6, siguiente byte 20
+DE11: offset byte 20 (hex 40), longitud esperada 6, leída 6, siguiente byte 23
+DE41: offset byte 23 (hex 46), longitud esperada 8, leída 8, siguiente byte 31
+DE60: offset byte 31 (hex 62), longitud esperada 999, leída 0, siguiente byte 32
+DE63: offset byte 32 (hex 64), longitud esperada 999, leída 58, siguiente byte 91
+DE64: offset byte 91 (hex 182), longitud esperada 8, leída 8, siguiente byte 99
+
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 11
+Longitud: 0000 (0 bytes)
+Header pre-MTI: 0000000002F06000000000 (11 bytes)
+TPDU: 000002F060 (destino=0000 origen=02F0 control=60)
+MTI encontrado: 0800 (offset byte 11)
+Bitmap encontrado: 20200000008000`0 (offset byte 13)
+DE2 comienza en: byte 21 (posición hex 42)
+
