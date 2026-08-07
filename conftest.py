@@ -1,0 +1,8 @@
+# -*- coding: utf-8 -*-
+"""Configuración de pytest: garantiza que la raíz del proyecto esté en sys.path."""
+
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))

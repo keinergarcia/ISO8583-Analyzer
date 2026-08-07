@@ -1,0 +1,645 @@
+{
+  "name": "iso8583_1987",
+  "description": "ISO 8583:1987",
+  "protocol": "iso8583",
+  "encoding": "auto",
+  "has_length_field": true,
+  "length_field_bytes": 2,
+  "has_tpdu": true,
+  "tpdu_length": 5,
+  "mti_length_bytes": 2,
+  "bitmap_length_bytes": 8,
+  "supports_secondary_bitmap": true,
+  "elements": {
+    "1": {
+      "name": "Bitmap",
+      "ftype": "b",
+      "length": 64,
+      "length_type": "fixed",
+      "description": "Bitmap"
+    },
+    "2": {
+      "name": "Primary Account Number",
+      "ftype": "n",
+      "length": 19,
+      "length_type": "llvar",
+      "description": "Primary Account Number"
+    },
+    "3": {
+      "name": "Processing Code",
+      "ftype": "n",
+      "length": 6,
+      "length_type": "fixed",
+      "description": "Processing Code"
+    },
+    "4": {
+      "name": "Transaction Amount",
+      "ftype": "n",
+      "length": 12,
+      "length_type": "fixed",
+      "description": "Transaction Amount"
+    },
+    "5": {
+      "name": "Amount, Settlement",
+      "ftype": "n",
+      "length": 12,
+      "length_type": "fixed",
+      "description": "Amount, Settlement"
+    },
+    "6": {
+      "name": "Amount, Cardholder Billing",
+      "ftype": "n",
+      "length": 12,
+      "length_type": "fixed",
+      "description": "Amount, Cardholder Billing"
+    },
+    "7": {
+      "name": "Transmission Date & Time",
+      "ftype": "n",
+      "length": 10,
+      "length_type": "fixed",
+      "description": "Transmission Date & Time"
+    },
+    "8": {
+      "name": "Amount, Cardholder Billing Fee",
+      "ftype": "n",
+      "length": 8,
+      "length_type": "fixed",
+      "description": "Amount, Cardholder Billing Fee"
+    },
+    "9": {
+      "name": "Conversion Rate, Settlement",
+      "ftype": "n",
+      "length": 8,
+      "length_type": "fixed",
+      "description": "Conversion Rate, Settlement"
+    },
+    "10": {
+      "name": "Conversion Rate, Cardholder Billing",
+      "ftype": "n",
+      "length": 8,
+      "length_type": "fixed",
+      "description": "Conversion Rate, Cardholder Billing"
+    },
+    "11": {
+      "name": "System Trace Audit Number",
+      "ftype": "n",
+      "length": 6,
+      "length_type": "fixed",
+      "description": "System Trace Audit Number"
+    },
+    "12": {
+      "name": "Time, Local Transaction",
+      "ftype": "n",
+      "length": 6,
+      "length_type": "fixed",
+      "description": "Time, Local Transaction"
+    },
+    "13": {
+      "name": "Date, Local Transaction",
+      "ftype": "n",
+      "length": 4,
+      "length_type": "fixed",
+      "description": "Date, Local Transaction"
+    },
+    "14": {
+      "name": "Date, Card Expiration",
+      "ftype": "n",
+      "length": 4,
+      "length_type": "fixed",
+      "description": "Date, Card Expiration"
+    },
+    "15": {
+      "name": "Date, Settlement",
+      "ftype": "n",
+      "length": 4,
+      "length_type": "fixed",
+      "description": "Date, Settlement"
+    },
+    "16": {
+      "name": "Date, Conversion",
+      "ftype": "n",
+      "length": 4,
+      "length_type": "fixed",
+      "description": "Date, Conversion"
+    },
+    "17": {
+      "name": "Date, Capture",
+      "ftype": "n",
+      "length": 4,
+      "length_type": "fixed",
+      "description": "Date, Capture"
+    },
+    "18": {
+      "name": "Merchant Type",
+      "ftype": "n",
+      "length": 4,
+      "length_type": "fixed",
+      "description": "Merchant Type"
+    },
+    "19": {
+      "name": "Acquiring Institution Country Code",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Acquiring Institution Country Code"
+    },
+    "20": {
+      "name": "PAN Extended Country Code",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "PAN Extended Country Code"
+    },
+    "21": {
+      "name": "Forwarding Institution Country Code",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Forwarding Institution Country Code"
+    },
+    "22": {
+      "name": "Point of Service Entry Mode",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Point of Service Entry Mode"
+    },
+    "23": {
+      "name": "Card Sequence Number",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Card Sequence Number"
+    },
+    "24": {
+      "name": "Network International Identifier (NII)",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Network International Identifier (NII)"
+    },
+    "25": {
+      "name": "Point of Service Condition Mode",
+      "ftype": "n",
+      "length": 2,
+      "length_type": "fixed",
+      "description": "Point of Service Condition Mode"
+    },
+    "26": {
+      "name": "Point of Service Capture Code",
+      "ftype": "n",
+      "length": 4,
+      "length_type": "fixed",
+      "description": "Point of Service Capture Code"
+    },
+    "27": {
+      "name": "Authorizing Identification Response Length",
+      "ftype": "n",
+      "length": 1,
+      "length_type": "fixed",
+      "description": "Authorizing Identification Response Length"
+    },
+    "28": {
+      "name": "Amount, Transaction Fee",
+      "ftype": "n",
+      "length": 9,
+      "length_type": "fixed",
+      "description": "Amount, Transaction Fee"
+    },
+    "29": {
+      "name": "Amount, Settlement Fee",
+      "ftype": "n",
+      "length": 9,
+      "length_type": "fixed",
+      "description": "Amount, Settlement Fee"
+    },
+    "30": {
+      "name": "Amount, Transaction Processing Fee",
+      "ftype": "n",
+      "length": 9,
+      "length_type": "fixed",
+      "description": "Amount, Transaction Processing Fee"
+    },
+    "31": {
+      "name": "Amount, Settlement Processing Fee",
+      "ftype": "n",
+      "length": 9,
+      "length_type": "fixed",
+      "description": "Amount, Settlement Processing Fee"
+    },
+    "32": {
+      "name": "Acquiring Institution Identification Code",
+      "ftype": "n",
+      "length": 11,
+      "length_type": "llvar",
+      "description": "Acquiring Institution Identification Code"
+    },
+    "33": {
+      "name": "Sending Institution Identification Code",
+      "ftype": "n",
+      "length": 11,
+      "length_type": "llvar",
+      "description": "Sending Institution Identification Code"
+    },
+    "34": {
+      "name": "PAN Extended",
+      "ftype": "n",
+      "length": 28,
+      "length_type": "llvar",
+      "description": "PAN Extended"
+    },
+    "35": {
+      "name": "Track 2 Data",
+      "ftype": "z",
+      "length": 37,
+      "length_type": "llvar",
+      "description": "Track 2 Data"
+    },
+    "36": {
+      "name": "Track 3 Data",
+      "ftype": "n",
+      "length": 104,
+      "length_type": "lllvar",
+      "description": "Track 3 Data"
+    },
+    "37": {
+      "name": "Retrieval Reference Number",
+      "ftype": "an",
+      "length": 12,
+      "length_type": "fixed",
+      "description": "Retrieval Reference Number"
+    },
+    "38": {
+      "name": "Authorization Identification Response",
+      "ftype": "an",
+      "length": 6,
+      "length_type": "fixed",
+      "description": "Authorization Identification Response"
+    },
+    "39": {
+      "name": "Response Code",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Response Code"
+    },
+    "40": {
+      "name": "Service Restriction Code",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Service Restriction Code"
+    },
+    "41": {
+      "name": "Terminal ID",
+      "ftype": "ans",
+      "length": 8,
+      "length_type": "fixed",
+      "description": "Terminal ID"
+    },
+    "42": {
+      "name": "Merchant ID",
+      "ftype": "ans",
+      "length": 15,
+      "length_type": "fixed",
+      "description": "Merchant ID"
+    },
+    "43": {
+      "name": "Card Acceptor Name/Location",
+      "ftype": "ans",
+      "length": 40,
+      "length_type": "fixed",
+      "description": "Card Acceptor Name/Location"
+    },
+    "44": {
+      "name": "Additional Response Data",
+      "ftype": "an",
+      "length": 25,
+      "length_type": "llvar",
+      "description": "Additional Response Data"
+    },
+    "45": {
+      "name": "Track 1 Data",
+      "ftype": "an",
+      "length": 76,
+      "length_type": "llvar",
+      "description": "Track 1 Data"
+    },
+    "46": {
+      "name": "Additional Data - ISO",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Additional Data - ISO"
+    },
+    "47": {
+      "name": "Additional Data - National",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Additional Data - National"
+    },
+    "48": {
+      "name": "Additional Data - Private",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Additional Data - Private"
+    },
+    "49": {
+      "name": "Currency Code",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Currency Code"
+    },
+    "50": {
+      "name": "Currency Code, Settlement",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Currency Code, Settlement"
+    },
+    "51": {
+      "name": "Currency Code, Cardholder Billing",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Currency Code, Cardholder Billing"
+    },
+    "52": {
+      "name": "Personal Identification Number Data",
+      "ftype": "b",
+      "length": 8,
+      "length_type": "fixed",
+      "description": "Personal Identification Number Data"
+    },
+    "53": {
+      "name": "Security Related Control Information",
+      "ftype": "n",
+      "length": 16,
+      "length_type": "fixed",
+      "description": "Security Related Control Information"
+    },
+    "54": {
+      "name": "Amount, Cardholder Billing Fee",
+      "ftype": "an",
+      "length": 24,
+      "length_type": "fixed",
+      "description": "Amount, Cardholder Billing Fee"
+    },
+    "55": {
+      "name": "EMV Data",
+      "ftype": "b",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "EMV Data"
+    },
+    "56": {
+      "name": "Reserved for ISO use",
+      "ftype": "n",
+      "length": 17,
+      "length_type": "fixed",
+      "description": "Reserved for ISO use"
+    },
+    "57": {
+      "name": "Reserved for ISO use",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Reserved for ISO use"
+    },
+    "58": {
+      "name": "Reserved for ISO use",
+      "ftype": "n",
+      "length": 11,
+      "length_type": "fixed",
+      "description": "Reserved for ISO use"
+    },
+    "59": {
+      "name": "Reserved for National use",
+      "ftype": "n",
+      "length": 4,
+      "length_type": "fixed",
+      "description": "Reserved for National use"
+    },
+    "60": {
+      "name": "Reserved National",
+      "ftype": "n",
+      "length": 999,
+      "length_type": "llvar",
+      "description": "Reserved National"
+    },
+    "61": {
+      "name": "Reserved for National use",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for National use"
+    },
+    "62": {
+      "name": "Reserved for Private use",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use"
+    },
+    "63": {
+      "name": "Reserved Private",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "llvar",
+      "description": "Reserved Private"
+    },
+    "64": {
+      "name": "MAC",
+      "ftype": "b",
+      "length": 8,
+      "length_type": "fixed",
+      "description": "MAC"
+    },
+    "65": {
+      "name": "Bitmap, Extended",
+      "ftype": "b",
+      "length": 64,
+      "length_type": "fixed",
+      "description": "Bitmap, Extended"
+    },
+    "70": {
+      "name": "Network Management Information Code",
+      "ftype": "n",
+      "length": 3,
+      "length_type": "fixed",
+      "description": "Network Management Information Code"
+    },
+    "90": {
+      "name": "Original Data Elements",
+      "ftype": "n",
+      "length": 42,
+      "length_type": "fixed",
+      "description": "Original Data Elements"
+    },
+    "91": {
+      "name": "File Update Code",
+      "ftype": "an",
+      "length": 1,
+      "length_type": "fixed",
+      "description": "File Update Code"
+    },
+    "92": {
+      "name": "File Security Code",
+      "ftype": "n",
+      "length": 5,
+      "length_type": "fixed",
+      "description": "File Security Code"
+    },
+    "93": {
+      "name": "Response Indicator",
+      "ftype": "n",
+      "length": 5,
+      "length_type": "fixed",
+      "description": "Response Indicator"
+    },
+    "94": {
+      "name": "Service Indicator",
+      "ftype": "an",
+      "length": 7,
+      "length_type": "fixed",
+      "description": "Service Indicator"
+    },
+    "95": {
+      "name": "Replacement Amounts",
+      "ftype": "an",
+      "length": 42,
+      "length_type": "fixed",
+      "description": "Replacement Amounts"
+    },
+    "96": {
+      "name": "Message Security Code",
+      "ftype": "b",
+      "length": 8,
+      "length_type": "fixed",
+      "description": "Message Security Code"
+    },
+    "97": {
+      "name": "Amount, Net Reconciliation",
+      "ftype": "n",
+      "length": 16,
+      "length_type": "fixed",
+      "description": "Amount, Net Reconciliation"
+    },
+    "98": {
+      "name": "Payee",
+      "ftype": "an",
+      "length": 25,
+      "length_type": "fixed",
+      "description": "Payee"
+    },
+    "99": {
+      "name": "Settlement Institution Identification Code",
+      "ftype": "n",
+      "length": 11,
+      "length_type": "llvar",
+      "description": "Settlement Institution Identification Code"
+    },
+    "100": {
+      "name": "Receiving Institution Identification Code",
+      "ftype": "n",
+      "length": 11,
+      "length_type": "llvar",
+      "description": "Receiving Institution Identification Code"
+    },
+    "101": {
+      "name": "File Name",
+      "ftype": "ans",
+      "length": 17,
+      "length_type": "fixed",
+      "description": "File Name"
+    },
+    "102": {
+      "name": "Account Identification 1",
+      "ftype": "ans",
+      "length": 28,
+      "length_type": "llvar",
+      "description": "Account Identification 1"
+    },
+    "103": {
+      "name": "Account Identification 2",
+      "ftype": "ans",
+      "length": 28,
+      "length_type": "llvar",
+      "description": "Account Identification 2"
+    },
+    "104": {
+      "name": "Transaction Description",
+      "ftype": "ans",
+      "length": 100,
+      "length_type": "lllvar",
+      "description": "Transaction Description"
+    },
+    "120": {
+      "name": "Relay Data",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Relay Data"
+    },
+    "121": {
+      "name": "Relay Data",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Relay Data"
+    },
+    "122": {
+      "name": "Reserved for Private use",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use"
+    },
+    "123": {
+      "name": "Reserved for Private use",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use"
+    },
+    "124": {
+      "name": "Reserved for Private use",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use"
+    },
+    "125": {
+      "name": "Reserved for Private use",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use"
+    },
+    "126": {
+      "name": "Reserved for Private use",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use"
+    },
+    "127": {
+      "name": "Reserved for Private use",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use"
+    },
+    "128": {
+      "name": "Reserved for Private use",
+      "ftype": "b",
+      "length": 8,
+      "length_type": "fixed",
+      "description": "Reserved for Private use"
+    }
+  }
+}

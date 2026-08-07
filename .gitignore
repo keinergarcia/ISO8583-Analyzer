@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Artefactos de PyInstaller
+build/
+dist/
+
+# Archivos de registro temporales
+*.log
+
+# IDE
+.vscode/
+.idea/
