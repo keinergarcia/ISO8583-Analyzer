@@ -27,6 +27,18 @@ def test_get_unknown_returns_default():
     assert registry.get("no_existe") is registry.get_default()
 
 
+def test_get_loads_specs_before_lookup(monkeypatch):
+    """get() debe cargar los specs antes de buscar: pedir un perfil como
+    primera llamada (sin que el registro se haya poblado) debe devolver ese
+    perfil y no caer silenciosamente en el perfil por defecto."""
+    import core.profiles.registry as registry_mod
+    monkeypatch.setattr(registry_mod, "_registry", {})
+    monkeypatch.setattr(registry_mod, "_cache_valid", False)
+    p = registry_mod.get("promerica")
+    assert p.name == "promerica"
+    assert p is registry_mod.get("promerica")
+
+
 def test_load_json(tmp_path):
     data = {
         "name": "test_profile",

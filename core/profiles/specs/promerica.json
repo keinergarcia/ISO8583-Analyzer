@@ -1,0 +1,53 @@
+{
+  "name": "promerica",
+  "description": "Promerica (red QA): cabeceras binarias + campos de datos ASCII, prefijos de longitud BCD de 4 dígitos (2 bytes)",
+  "protocol": "iso8583",
+  "encoding": "bcd",
+  "has_length_field": true,
+  "length_field_bytes": 2,
+  "has_tpdu": true,
+  "tpdu_length": 5,
+  "mti_length_bytes": 2,
+  "bitmap_length_bytes": 8,
+  "supports_secondary_bitmap": true,
+  "llvar_prefix_bytes": 2,
+  "lllvar_prefix_bytes": 2,
+  "lllvar_4digit_bcd": true,
+  "elements": {
+    "39": {
+      "name": "Response Code",
+      "ftype": "an",
+      "length": 2,
+      "length_type": "fixed",
+      "description": "Response Code (2 dígitos ASCII)"
+    },
+    "41": {
+      "name": "Terminal ID",
+      "ftype": "ans",
+      "length": 8,
+      "length_type": "fixed",
+      "description": "Terminal ID"
+    },
+    "60": {
+      "name": "Reserved National",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "llvar",
+      "description": "Reserved National (ASCII, prefijo 2 bytes)"
+    },
+    "61": {
+      "name": "Reserved for National use",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for National use (ASCII, prefijo 2 bytes)"
+    },
+    "62": {
+      "name": "Reserved for Private use",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use (ASCII, prefijo 2 bytes)"
+    }
+  }
+}

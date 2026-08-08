@@ -9,6 +9,7 @@ descansa sobre la lógica ya probada, sin duplicarla.
 from ...issues import IssueList
 from ...model.message import DecodedNode, Message
 from ...parser import ParseError, ParseOptions, parse_message
+from ...fields import DATA_ELEMENTS
 from ..base import ProtocolDecoder
 from ..registry import register_decoder
 
@@ -167,29 +168,41 @@ class ISO8583Decoder(ProtocolDecoder):
     protocol_id = "iso8583"
 
     def decode(self, raw, profile, options=None) -> Message:
+        field_defs = dict(DATA_ELEMENTS)
+        for number, fdef in getattr(profile, "elements", {}).items():
+            field_defs[number] = fdef
         opts = ParseOptions(
             has_tpdu=profile.has_tpdu,
             tpdu_length_bytes=profile.tpdu_length,
             numeric_encoding=profile.encoding,
             llvar_prefix_bytes=getattr(profile, "llvar_prefix_bytes", 1),
             lllvar_prefix_bytes=getattr(profile, "lllvar_prefix_bytes", 2),
+            lllvar_4digit_bcd=getattr(profile, "lllvar_4digit_bcd", False),
+            field_defs=field_defs,
         )
         if options is not None:
             if getattr(options, "has_tpdu", None) is not None:
                 opts.has_tpdu = options.has_tpdu
             if getattr(options, "tpdu_length_bytes", None) is not None:
                 opts.tpdu_length_bytes = options.tpdu_length_bytes
-            if getattr(options, "numeric_encoding", None):
-                opts.numeric_encoding = options.numeric_encoding
+            enc = getattr(options, "numeric_encoding", None)
+            if enc and enc != "auto":
+                opts.numeric_encoding = enc
             if getattr(options, "mti_offset", None) is not None:
                 opts.mti_offset = options.mti_offset
             if getattr(options, "mti_auto", None) is not None:
                 opts.mti_auto = options.mti_auto
             if getattr(options, "debug", None):
                 opts.debug = True
-            if getattr(options, "llvar_prefix_bytes", None) is not None:
+            # El layout de prefijos y la codificación los define el perfil; un
+            # caller que deje los valores por defecto no debe pisarlos.
+            if getattr(options, "llvar_prefix_bytes", None) not in (None, 1):
                 opts.llvar_prefix_bytes = options.llvar_prefix_bytes
-            if getattr(options, "lllvar_prefix_bytes", None) is not None:
+            if getattr(options, "lllvar_prefix_bytes", None) not in (None, 2):
                 opts.lllvar_prefix_bytes = options.lllvar_prefix_bytes
+            if getattr(options, "lllvar_4digit_bcd", None) not in (None, False):
+                opts.lllvar_4digit_bcd = options.lllvar_4digit_bcd
+            if getattr(options, "field_defs", None):
+                opts.field_defs = options.field_defs
         result = parse_message(raw, opts)
         return analysis_to_message(result, profile.name, profile.protocol)

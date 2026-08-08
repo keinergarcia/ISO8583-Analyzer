@@ -375,3 +375,20 @@ MTI encontrado: 0800 (offset byte 11)
 Bitmap encontrado: 20200000008000`0 (offset byte 13)
 DE2 comienza en: byte 21 (posición hex 42)
 
+=== DIAGNÓSTICO DE PARSEO ISO8583 (depuración) ===
+Modo offset MTI: Automático
+Offset inicial usado (bytes antes del MTI): 7
+Longitud: 02f0 (752 bytes)
+Header pre-MTI: 02f06000000000 (7 bytes)
+TPDU: 6000000000 (destino=6000 origen=0000 control=00)
+MTI encontrado: 0800 (offset byte 7)
+Bitmap encontrado: 2020000000800013 (offset byte 9)
+DE2 comienza en: byte 17 (posición hex 34)
+DE3: offset inicial byte 17 (hex 34), offset final byte 20 (hex 40), longitud del prefijo 0 byte(s), longitud interpretada 6, bytes consumidos 3, bytes restantes 734
+DE11: offset inicial byte 20 (hex 40), offset final byte 23 (hex 46), longitud del prefijo 0 byte(s), longitud interpretada 6, bytes consumidos 3, bytes restantes 731
+DE41: offset inicial byte 23 (hex 46), offset final byte 31 (hex 62), longitud del prefijo 0 byte(s), longitud interpretada 8, bytes consumidos 8, bytes restantes 723
+DE60: offset inicial byte 31 (hex 62), offset final byte 91 (hex 182), longitud del prefijo 2 byte(s), longitud interpretada 58, bytes consumidos 60, bytes restantes 663
+DE63: offset inicial byte 91 (hex 182), offset final byte 160 (hex 320), longitud del prefijo 2 byte(s), longitud interpretada 67, bytes consumidos 69, bytes restantes 594
+DE64: offset inicial byte 160 (hex 320), offset final byte 168 (hex 336), longitud del prefijo 0 byte(s), longitud interpretada 8, bytes consumidos 8, bytes restantes 586
+  DE64 nota: Cabecera GZIP (1F 8B 08) en el byte 2 de este campo · los 2 bytes previos indican un payload comprimido de 592 bytes que continúa tras este campo.
+

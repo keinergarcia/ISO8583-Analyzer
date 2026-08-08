@@ -1,6 +1,1 @@
-{
-  "tests/test_api.py::test_decode_emv": true,
-  "tests/test_core.py::test_emv": true,
-  "tests/test_exporter.py::test_result_to_text_emv": true,
-  "tests/test_model.py::test_decode_emv_tree": true
-}
+{}

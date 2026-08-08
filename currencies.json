@@ -1,0 +1,322 @@
+{
+  "032": {
+    "code": "ARS",
+    "name": "Peso argentino",
+    "minor_units": 2
+  },
+  "036": {
+    "code": "AUD",
+    "name": "Dólar australiano",
+    "minor_units": 2
+  },
+  "048": {
+    "code": "BHD",
+    "name": "Dinar bareiní",
+    "minor_units": 3
+  },
+  "050": {
+    "code": "BDT",
+    "name": "Taka bangladesí",
+    "minor_units": 2
+  },
+  "068": {
+    "code": "BOB",
+    "name": "Boliviano",
+    "minor_units": 2
+  },
+  "076": {
+    "code": "BRL",
+    "name": "Real brasileño",
+    "minor_units": 2
+  },
+  "124": {
+    "code": "CAD",
+    "name": "Dólar canadiense",
+    "minor_units": 2
+  },
+  "152": {
+    "code": "CLP",
+    "name": "Peso chileno",
+    "minor_units": 0
+  },
+  "156": {
+    "code": "CNY",
+    "name": "Yuan chino",
+    "minor_units": 2
+  },
+  "170": {
+    "code": "COP",
+    "name": "Peso colombiano",
+    "minor_units": 2
+  },
+  "191": {
+    "code": "HRK",
+    "name": "Kuna croata",
+    "minor_units": 2
+  },
+  "203": {
+    "code": "CZK",
+    "name": "Corona checa",
+    "minor_units": 2
+  },
+  "208": {
+    "code": "DKK",
+    "name": "Corona danesa",
+    "minor_units": 2
+  },
+  "344": {
+    "code": "HKD",
+    "name": "Dólar de Hong Kong",
+    "minor_units": 2
+  },
+  "348": {
+    "code": "HUF",
+    "name": "Florín húngaro",
+    "minor_units": 2
+  },
+  "352": {
+    "code": "ISK",
+    "name": "Corona islandesa",
+    "minor_units": 0
+  },
+  "356": {
+    "code": "INR",
+    "name": "Rupia india",
+    "minor_units": 2
+  },
+  "360": {
+    "code": "IDR",
+    "name": "Rupia indonesia",
+    "minor_units": 2
+  },
+  "368": {
+    "code": "IQD",
+    "name": "Dinar iraquí",
+    "minor_units": 3
+  },
+  "376": {
+    "code": "ILS",
+    "name": "Nuevo shéquel israelí",
+    "minor_units": 2
+  },
+  "392": {
+    "code": "JPY",
+    "name": "Yen japonés",
+    "minor_units": 0
+  },
+  "398": {
+    "code": "KZT",
+    "name": "Tenge kazajo",
+    "minor_units": 2
+  },
+  "400": {
+    "code": "JOD",
+    "name": "Dinar jordano",
+    "minor_units": 3
+  },
+  "404": {
+    "code": "KES",
+    "name": "Chelín keniano",
+    "minor_units": 2
+  },
+  "410": {
+    "code": "KRW",
+    "name": "Won surcoreano",
+    "minor_units": 0
+  },
+  "414": {
+    "code": "KWD",
+    "name": "Dinar kuwaití",
+    "minor_units": 3
+  },
+  "434": {
+    "code": "LYD",
+    "name": "Dinar libio",
+    "minor_units": 3
+  },
+  "446": {
+    "code": "MOP",
+    "name": "Pataca de Macao",
+    "minor_units": 2
+  },
+  "458": {
+    "code": "MYR",
+    "name": "Ringgit malayo",
+    "minor_units": 2
+  },
+  "462": {
+    "code": "MVR",
+    "name": "Rupia de Maldivas",
+    "minor_units": 2
+  },
+  "484": {
+    "code": "MXN",
+    "name": "Peso mexicano",
+    "minor_units": 2
+  },
+  "512": {
+    "code": "OMR",
+    "name": "Rial omaní",
+    "minor_units": 3
+  },
+  "554": {
+    "code": "NZD",
+    "name": "Dólar neozelandés",
+    "minor_units": 2
+  },
+  "558": {
+    "code": "NIO",
+    "name": "Córdoba nicaragüense",
+    "minor_units": 2
+  },
+  "566": {
+    "code": "NGN",
+    "name": "Naira nigeriana",
+    "minor_units": 2
+  },
+  "578": {
+    "code": "NOK",
+    "name": "Corona noruega",
+    "minor_units": 2
+  },
+  "586": {
+    "code": "PKR",
+    "name": "Rupia pakistaní",
+    "minor_units": 2
+  },
+  "600": {
+    "code": "PYG",
+    "name": "Guaraní paraguayo",
+    "minor_units": 0
+  },
+  "604": {
+    "code": "PEN",
+    "name": "Sol peruano",
+    "minor_units": 2
+  },
+  "608": {
+    "code": "PHP",
+    "name": "Peso filipino",
+    "minor_units": 2
+  },
+  "634": {
+    "code": "QAR",
+    "name": "Riyal catarí",
+    "minor_units": 2
+  },
+  "643": {
+    "code": "RUB",
+    "name": "Rublo ruso",
+    "minor_units": 2
+  },
+  "682": {
+    "code": "SAR",
+    "name": "Riyal saudí",
+    "minor_units": 2
+  },
+  "702": {
+    "code": "SGD",
+    "name": "Dólar de Singapur",
+    "minor_units": 2
+  },
+  "704": {
+    "code": "VND",
+    "name": "Dong vietnamita",
+    "minor_units": 0
+  },
+  "710": {
+    "code": "ZAR",
+    "name": "Rand sudafricano",
+    "minor_units": 2
+  },
+  "724": {
+    "code": "ESP",
+    "name": "Peseta española",
+    "minor_units": 2
+  },
+  "752": {
+    "code": "SEK",
+    "name": "Corona sueca",
+    "minor_units": 2
+  },
+  "756": {
+    "code": "CHF",
+    "name": "Franco suizo",
+    "minor_units": 2
+  },
+  "764": {
+    "code": "THB",
+    "name": "Baht tailandés",
+    "minor_units": 2
+  },
+  "784": {
+    "code": "AED",
+    "name": "Dírham de los EAU",
+    "minor_units": 2
+  },
+  "788": {
+    "code": "TND",
+    "name": "Dinar tunecino",
+    "minor_units": 3
+  },
+  "818": {
+    "code": "EGP",
+    "name": "Libra egipcia",
+    "minor_units": 2
+  },
+  "826": {
+    "code": "GBP",
+    "name": "Libra esterlina",
+    "minor_units": 2
+  },
+  "840": {
+    "code": "USD",
+    "name": "Dólar estadounidense",
+    "minor_units": 2
+  },
+  "858": {
+    "code": "UYU",
+    "name": "Peso uruguayo",
+    "minor_units": 2
+  },
+  "901": {
+    "code": "TWD",
+    "name": "Dólar taiwanés",
+    "minor_units": 2
+  },
+  "928": {
+    "code": "VES",
+    "name": "Bolívar soberano",
+    "minor_units": 2
+  },
+  "946": {
+    "code": "RON",
+    "name": "Leu rumano",
+    "minor_units": 2
+  },
+  "949": {
+    "code": "TRY",
+    "name": "Lira turca",
+    "minor_units": 2
+  },
+  "975": {
+    "code": "BGN",
+    "name": "Lev búlgaro",
+    "minor_units": 2
+  },
+  "978": {
+    "code": "EUR",
+    "name": "Euro",
+    "minor_units": 2
+  },
+  "980": {
+    "code": "UAH",
+    "name": "Grivna ucraniana",
+    "minor_units": 2
+  },
+  "985": {
+    "code": "PLN",
+    "name": "Zloty polaco",
+    "minor_units": 2
+  }
+}

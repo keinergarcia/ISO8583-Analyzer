@@ -33,6 +33,7 @@ class Profile:
     description: str = ""
     llvar_prefix_bytes: int = 1
     lllvar_prefix_bytes: int = 2
+    lllvar_4digit_bcd: bool = False
 
     def data_element(self, number):
         return self.elements.get(number)
@@ -56,4 +57,5 @@ class Profile:
             "description": self.description,
             "llvar_prefix_bytes": self.llvar_prefix_bytes,
             "lllvar_prefix_bytes": self.lllvar_prefix_bytes,
+            "lllvar_4digit_bcd": self.lllvar_4digit_bcd,
         }

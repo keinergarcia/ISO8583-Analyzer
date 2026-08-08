@@ -19,6 +19,8 @@ a = Analysis(
         (str(project_root / "history"), "history"),
         (str(project_root / "core" / "profiles" / "specs"), "core/profiles/specs"),
         (str(project_root / "plugins"), "plugins"),
+        (str(project_root / "fields.json"), "."),
+        (str(project_root / "currencies.json"), "."),
     ],
     hiddenimports=["qdarktheme"],
     hookspath=[],

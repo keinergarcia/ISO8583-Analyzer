@@ -90,4 +90,4 @@ def test_debug_mode_reports_offset_and_fields(capsys):
     assert "Offset inicial usado (bytes antes del MTI): 7" in out
     assert "MTI encontrado: 0810" in out
     assert "Bitmap encontrado: 2020000000800013" in out
-    assert "DE3:" in out and "siguiente byte" in out
+    assert "DE3:" in out and "offset final byte" in out and "bytes consumidos" in out

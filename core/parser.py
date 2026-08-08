@@ -41,6 +41,8 @@ class ParseOptions:
     debug: bool = False               # imprimir diagnóstico de parseo
     llvar_prefix_bytes: int = 1       # bytes para prefijo LLVAR en BCD (1=estándar, 2=algunas redes)
     lllvar_prefix_bytes: int = 2      # bytes para prefijo LLLVAR en BCD (2=estándar, 3=algunas redes)
+    lllvar_4digit_bcd: bool = False   # prefijo LLLVAR de 2 bytes como BCD completo de 4 dígitos (no 3)
+    field_defs: Optional[dict] = None  # definiciones de campos del perfil (None = diccionario embebido)
 
 
 @dataclass
@@ -58,6 +60,7 @@ class ParsedField:
     has_error: bool = False
     error: str = ""
     emv: Optional[list] = None
+    note: str = ""
 
     def as_dict(self):
         return {
@@ -74,6 +77,7 @@ class ParsedField:
             "has_error": self.has_error,
             "error": self.error,
             "emv": self.emv,
+            "note": self.note,
         }
 
 
@@ -181,11 +185,13 @@ def _len_prefix_hex(length_type):
     return {"llvar": 2, "lllvar": 4, "llllvar": 4}[length_type]
 
 
-def _bcd_len_value(seg, length_type="llvar"):
+def _bcd_len_value(seg, length_type="llvar", lllvar_4digit=False):
     """Interpreta un prefijo de longitud BCD como decimal.
 
     - llvar: 2 hex chars (1 byte) o 4 hex chars (2 bytes)
     - lllvar: 4 hex chars (2 bytes, 3 nibbles) o 6 hex chars (3 bytes)
+      Si lllvar_4digit es True, el prefijo lllvar de 2 bytes se interpreta
+      como BCD completo de 4 dígitos (formato usado por algunas redes).
     """
     if not seg:
         return 0
@@ -198,17 +204,24 @@ def _bcd_len_value(seg, length_type="llvar"):
         if length_type == "llvar" and len(seg) == 2:
             return int(seg, 10)  # 1 byte BCD = 2 dígitos
         if length_type == "lllvar" and len(seg) == 4:
+            if lllvar_4digit:
+                return int(seg, 10)  # 2 bytes BCD = 4 dígitos completos
             return int(seg[:3], 10)  # 2 bytes BCD, usar 3 nibbles
     # Fallback: interpretar como hex
     try:
         if length_type == "lllvar" and len(seg) == 4:
+            if seg[3] == "F":
+                return int(seg[:3], 10)  # 3 dígitos BCD + nibble de relleno F
+            if lllvar_4digit:
+                return int(seg, 16)
             return int(seg[:3], 16)
         return int(seg, 16)
     except ValueError:
         return 0
 
 
-def _read_len_digits_bcd(h, pos, length_type, debug=None, llvar_bytes=1, lllvar_bytes=2):
+def _read_len_digits_bcd(h, pos, length_type, debug=None, llvar_bytes=1, lllvar_bytes=2,
+                         lllvar_4digit=False):
     if debug is None:
         debug = []
     start = pos
@@ -224,7 +237,7 @@ def _read_len_digits_bcd(h, pos, length_type, debug=None, llvar_bytes=1, lllvar_
         seg = h[pos:pos + hex_chars]
         if len(seg) < hex_chars:
             raise ParseError("Prefijo de longitud (LLLVAR) incompleto.")
-        value = _bcd_len_value(seg, "lllvar")
+        value = _bcd_len_value(seg, "lllvar", lllvar_4digit=lllvar_4digit)
         npos = pos + hex_chars
     debug.append(
         f"    Longitud BCD {length_type}: offset inicial byte {start // 2} (hex {start}), "
@@ -292,7 +305,8 @@ def _take_bytes(h, pos, nbytes):
     return seg.encode("utf-8").hex().upper(), pos + nbytes
 
 
-def _read_field_bcd(h, pos, fdef, issues, debug=None, llvar_bytes=1, lllvar_bytes=2):
+def _read_field_bcd(h, pos, fdef, issues, debug=None, llvar_bytes=1, lllvar_bytes=2,
+                    lllvar_4digit=False):
     start = pos
     if fdef.length_type == "fixed":
         if fdef.is_numeric:
@@ -308,7 +322,8 @@ def _read_field_bcd(h, pos, fdef, issues, debug=None, llvar_bytes=1, lllvar_byte
             value = _hex_to_text(raw, fdef.ftype)
         return _build_field(fdef, digits, value, raw, start), pos
     length_digits, pos = _read_len_digits_bcd(h, pos, fdef.length_type, debug,
-                                               llvar_bytes=llvar_bytes, lllvar_bytes=lllvar_bytes)
+                                               llvar_bytes=llvar_bytes, lllvar_bytes=lllvar_bytes,
+                                               lllvar_4digit=lllvar_4digit)
     return _read_field_data(h, pos, fdef, length_digits, issues, start)
 
 
@@ -363,8 +378,34 @@ def _read_field_data_ascii(h, pos, fdef, length_digits, issues, start):
     return _build_field(fdef, length_digits, value, raw, start), pos
 
 
+def _gzip_note(raw_hex):
+    """Detecta una cabecera GZIP (1F 8B 08) dentro de un campo.
+
+    No altera el parseo: solo anota que el contenido es binario comprimido.
+    Si la cabecera aparece en el byte 2 y los 2 bytes previos son un prefijo
+    de longitud (patrón habitual: LONGITUD + stream gzip), se indica cuántos
+    bytes de payload comprimido continúan tras el campo.
+    """
+    up = (raw_hex or "").upper()
+    idx = up.find("1F8B08")
+    if idx < 0:
+        return ""
+    byte_pos = idx // 2
+    parts = [f"Cabecera GZIP (1F 8B 08) en el byte {byte_pos} de este campo"]
+    if byte_pos == 2 and len(up) >= 4:
+        try:
+            plen = int(up[:4], 16)
+            parts.append(
+                f"los 2 bytes previos indican un payload comprimido de {plen} bytes "
+                f"que continúa tras este campo"
+            )
+        except ValueError:
+            pass
+    return " · ".join(parts) + "."
+
+
 def _build_field(fdef, length_digits, value, raw, start):
-    return ParsedField(
+    f = ParsedField(
         number=fdef.number,
         name=fdef.name,
         description=fdef.description,
@@ -376,6 +417,10 @@ def _build_field(fdef, length_digits, value, raw, start):
         raw_hex=raw.upper(),
         offset_hex=start,
     )
+    note = _gzip_note(raw.upper())
+    if note:
+        f.note = note
+    return f
 
 
 # ---------------------------------------------------------------------------
@@ -439,7 +484,9 @@ def _score_offset(clean, off, opts, encoding):
     issues, errors = [], []
     fields, pos, active = _read_fields_hex(clean, headers, encoding, issues, errors,
                                            llvar_bytes=opts.llvar_prefix_bytes,
-                                           lllvar_bytes=opts.lllvar_prefix_bytes)
+                                           lllvar_bytes=opts.lllvar_prefix_bytes,
+                                           field_defs=opts.field_defs,
+                                           lllvar_4digit=opts.lllvar_4digit_bcd)
     if any(f.has_error for f in fields):
         score -= 20
     else:
@@ -566,7 +613,7 @@ def _parse_headers(clean, opts, errors, encoding="bcd"):
 # ---------------------------------------------------------------------------
 
 def _read_fields_hex(clean, headers, encoding, issues, errors, debug=None,
-                     llvar_bytes=1, lllvar_bytes=2):
+                     llvar_bytes=1, lllvar_bytes=2, field_defs=None, lllvar_4digit=False):
     """Lee todos los campos activos. Devuelve (fields, pos, active)."""
     pos = headers["pos"]
     if debug is None:
@@ -578,7 +625,7 @@ def _read_fields_hex(clean, headers, encoding, issues, errors, debug=None,
     for number in active:
         if number == 1:
             continue
-        fdef = DATA_ELEMENTS.get(number)
+        fdef = field_defs.get(number) if field_defs else DATA_ELEMENTS.get(number)
         if fdef is None:
             fields.append(
                 ParsedField(
@@ -599,11 +646,13 @@ def _read_fields_hex(clean, headers, encoding, issues, errors, debug=None,
             continue
         field_start = pos
         try:
-            if encoding in ("ascii", "hybrid"):
+            field_encoding = fdef.encoding or encoding
+            if field_encoding in ("ascii", "hybrid"):
                 field, pos = _read_field_ascii(clean, pos, fdef, issues)
             else:
                 field, pos = _read_field_bcd(clean, pos, fdef, issues,
-                                             llvar_bytes=llvar_bytes, lllvar_bytes=lllvar_bytes)
+                                             llvar_bytes=llvar_bytes, lllvar_bytes=lllvar_bytes,
+                                             lllvar_4digit=lllvar_4digit)
             fields.append(field)
         except ParseError as exc:
             fields.append(
@@ -624,11 +673,24 @@ def _read_fields_hex(clean, headers, encoding, issues, errors, debug=None,
             )
             break
         if debug is not None:
+            consumed_bytes = (pos - field_start) // 2
+            remaining_bytes = (len(clean) - pos) // 2
+            if fdef.length_type == "fixed":
+                prefix_bytes = 0
+            elif field_encoding in ("ascii", "hybrid"):
+                prefix_bytes = {"llvar": 2, "lllvar": 3, "llllvar": 4}[fdef.length_type]
+            else:
+                prefix_bytes = llvar_bytes if fdef.length_type == "llvar" else lllvar_bytes
             debug.append(
-                f"DE{number}: offset byte {field_start // 2} (hex {field_start}), "
-                f"longitud esperada {fdef.length}, leída {field.length_digits}, "
-                f"siguiente byte {pos // 2}"
+                f"DE{number}: offset inicial byte {field_start // 2} (hex {field_start}), "
+                f"offset final byte {pos // 2} (hex {pos}), "
+                f"longitud del prefijo {prefix_bytes} byte(s), "
+                f"longitud interpretada {field.length_digits}, "
+                f"bytes consumidos {consumed_bytes}, "
+                f"bytes restantes {remaining_bytes}"
             )
+            if field.note:
+                debug.append(f"  DE{number} nota: {field.note}")
     return fields, pos, active
 
 
@@ -712,7 +774,9 @@ def _parse_bcd(clean, opts):
     debug = headers.get("debug") if opts.debug else None
     fields, pos, _active = _read_fields_hex(clean, headers, "bcd", issues, errors, debug,
                                              llvar_bytes=opts.llvar_prefix_bytes,
-                                             lllvar_bytes=opts.lllvar_prefix_bytes)
+                                             lllvar_bytes=opts.lllvar_prefix_bytes,
+                                             field_defs=opts.field_defs,
+                                             lllvar_4digit=opts.lllvar_4digit_bcd)
     consumed_hex = pos - headers["data_start_hex"]
     if opts.debug and debug:
         report_parse_debug(debug)
@@ -737,7 +801,9 @@ def _parse_hybrid(clean, opts):
     debug = headers.get("debug") if opts.debug else None
     fields, pos, _active = _read_fields_hex(clean, headers, "hybrid", issues, errors, debug,
                                              llvar_bytes=opts.llvar_prefix_bytes,
-                                             lllvar_bytes=opts.lllvar_prefix_bytes)
+                                             lllvar_bytes=opts.lllvar_prefix_bytes,
+                                             field_defs=opts.field_defs,
+                                             lllvar_4digit=opts.lllvar_4digit_bcd)
     consumed_hex = pos - headers["data_start_hex"]
     if opts.debug and debug:
         report_parse_debug(debug)
@@ -793,7 +859,8 @@ def _score_offset_ascii(text, off, opts):
     h = "".join(format(ord(c), "02X") for c in text[pos:])
     fake = {"primary": primary, "secondary": secondary, "pos": 0}
     issues, errors = [], []
-    fields, _p, _a = _read_fields_hex(h, fake, "ascii", issues, errors)
+    fields, _p, _a = _read_fields_hex(h, fake, "ascii", issues, errors,
+                                      field_defs=opts.field_defs)
     if any(f.has_error for f in fields):
         score -= 20
     else:
@@ -887,7 +954,7 @@ def _parse_ascii(clean, opts):
     for number in active:
         if number == 1:
             continue
-        fdef = DATA_ELEMENTS.get(number)
+        fdef = (opts.field_defs or DATA_ELEMENTS).get(number)
         if fdef is None:
             fields.append(
                 ParsedField(number, "Desconocido", "Reservado", "an", "lllvar", 999, 0, "",
@@ -905,10 +972,21 @@ def _parse_ascii(clean, opts):
             )
             break
         if debug is not None:
+            if fdef.length_type == "fixed":
+                prefix_bytes = 0
+            else:
+                prefix_bytes = {"llvar": 2, "lllvar": 3, "llllvar": 4}[fdef.length_type]
+            base = off + 2 + 8 + len(secondary) // 2
             debug.append(
-                f"DE{number}: offset byte {off + 2 + 8 + len(secondary) // 2 + pos_hex // 2}, "
-                f"longitud esperada {fdef.length}, leída {field.length_digits}"
+                f"DE{number}: offset inicial byte {base + field_start // 2} (hex {field_start}), "
+                f"offset final byte {base + pos_hex // 2} (hex {pos_hex}), "
+                f"longitud del prefijo {prefix_bytes} byte(s), "
+                f"longitud interpretada {field.length_digits}, "
+                f"bytes consumidos {(pos_hex - field_start) // 2}, "
+                f"bytes restantes {(len(h) - pos_hex) // 2}"
             )
+            if field.note:
+                debug.append(f"  DE{number} nota: {field.note}")
 
     consumed_chars = (len(text) - len(length_hex) - len(data_text)) + pos_hex // 2
     consumed_hex = consumed_chars * 2

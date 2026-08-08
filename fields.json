@@ -1,0 +1,50 @@
+{
+  "3": {
+    "category": "code",
+    "description": "Processing Code"
+  },
+  "11": {
+    "category": "identifier",
+    "description": "System Trace Audit Number"
+  },
+  "39": {
+    "category": "response_code",
+    "description": "Response Code"
+  },
+  "41": {
+    "category": "identifier",
+    "description": "Terminal ID"
+  },
+  "42": {
+    "category": "identifier",
+    "description": "Merchant ID"
+  },
+  "48": {
+    "category": "text",
+    "description": "Additional Data - Private"
+  },
+  "60": {
+    "category": "text",
+    "description": "Reserved National Message"
+  },
+  "61": {
+    "category": "text",
+    "description": "Reserved for National use"
+  },
+  "62": {
+    "category": "text",
+    "description": "Reserved for Private use"
+  },
+  "63": {
+    "category": "text",
+    "description": "Reserved Private"
+  },
+  "104": {
+    "category": "text",
+    "description": "Transaction Description"
+  },
+  "127": {
+    "category": "text",
+    "description": "Reserved for Private use"
+  }
+}

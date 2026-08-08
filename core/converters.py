@@ -89,6 +89,70 @@ def decimal_to_hex(text):
     return format(value, "X")
 
 
+def hex_to_binary(text):
+    """Convierte una cadena hex en bits binarios (8 bits por byte).
+
+    'FF'   -> '11111111'
+    '0064' -> '00000000 01100100'
+    Mantiene el orden de los bytes.
+    """
+    cleaned = clean_text(text)
+    if not is_hex(cleaned):
+        raise ValueError("Entrada no válida: solo se permiten caracteres hexadecimales.")
+    if len(cleaned) % 2 != 0:
+        raise ValueError("HEX inválido: la cantidad de caracteres debe ser par.")
+    return " ".join(f"{b:08b}" for b in bytes.fromhex(cleaned))
+
+
+def binary_to_hex(text):
+    """Convierte una cadena de bits (0/1) en su representación hex.
+
+    '11111111'          -> 'FF'
+    '00000000 01100100' -> '0064'
+    Cada byte debe tener exactamente 8 bits.
+    """
+    if text is None:
+        raise ValueError("Entrada vacía.")
+    cleaned = "".join(ch for ch in str(text) if ch not in (" ", "\t", "\n", "\r", "-", "_"))
+    if not cleaned:
+        raise ValueError("Entrada vacía.")
+    if not all(ch in "01" for ch in cleaned):
+        raise ValueError("Entrada no válida: solo se permiten dígitos binarios (0 y 1).")
+    if len(cleaned) % 8 != 0:
+        raise ValueError("BINARIO inválido: la cantidad de bits debe ser múltiplo de 8.")
+    return "".join(f"{int(cleaned[i:i + 8], 2):02X}" for i in range(0, len(cleaned), 8))
+
+
+def decimal_to_binary(text):
+    """Convierte un entero decimal a su representación binaria.
+
+    '255' -> '11111111'
+    '256' -> '100000000'
+    """
+    cleaned = clean_text(text)
+    if not cleaned or not cleaned.isdigit():
+        raise ValueError("Entrada no válida: solo se permiten dígitos decimales.")
+    value = int(cleaned)
+    if value == 0:
+        return "0"
+    return format(value, "b")
+
+
+def binary_to_decimal(text):
+    """Convierte una cadena de bits (0/1) en su valor decimal.
+
+    '11111111' -> '255'
+    """
+    if text is None:
+        raise ValueError("Entrada vacía.")
+    cleaned = "".join(ch for ch in str(text) if ch not in (" ", "\t", "\n", "\r", "-", "_"))
+    if not cleaned:
+        raise ValueError("Entrada vacía.")
+    if not all(ch in "01" for ch in cleaned):
+        raise ValueError("Entrada no válida: solo se permiten dígitos binarios (0 y 1).")
+    return str(int(cleaned, 2))
+
+
 def remove_spaces(text):
     """Elimina todos los espacios, tabulaciones y saltos de línea."""
     return clean_text(text)

@@ -50,6 +50,52 @@ def decode(raw, profile_name=None, options=None, protocol=None):
     return decoder.decode(raw, profile, options=options)
 
 
+def _score_parse(result):
+    """Puntúa un resultado de análisis para comparar perfiles entre sí.
+
+    Premia: cero errores, pocas advertencias, más campos leídos y coincidencia
+    de longitud. Penaliza: campos variables interpretados con longitud 0
+    (síntoma clásico de un layout de prefijo incorrecto) y campos con error.
+    """
+    if result.errors:
+        return -100000
+    score = 100 - 10 * len(result.warnings)
+    score += 2 * len(result.fields)
+    if result.consumed_hex and result.declared_hex:
+        if result.consumed_hex == result.declared_hex:
+            score += 50
+    for f in result.fields:
+        if f.has_error:
+            score -= 50
+        elif f.length_type != "fixed" and f.length_digits == 0:
+            score -= 10
+    return score
+
+
+def pick_profile(raw, options=None):
+    """Devuelve el nombre del perfil que mejor analiza la trama.
+
+    Prueba todos los perfiles registrados y puntúa cada resultado. En empate
+    gana el que aparezca primero (el perfil por defecto). Devuelve None si
+    ningún perfil pudo analizar la trama.
+    """
+    from .parser import ParseError
+
+    best_name = None
+    best_score = None
+    for meta in profile_registry.list_profiles():
+        name = meta["name"]
+        try:
+            msg = decode(raw, profile_name=name, options=options)
+        except ParseError:
+            continue
+        score = _score_parse(msg.legacy)
+        if best_score is None or score > best_score:
+            best_score = score
+            best_name = name
+    return best_name
+
+
 def analyze(raw, profile_name=None, options=None, protocol=None):
     """Alias de decode()."""
     return decode(raw, profile_name=profile_name, options=options, protocol=protocol)
@@ -92,5 +138,6 @@ __all__ = [
     "decode", "analyze", "validate", "list_profiles", "load_profile",
     "get_default_profile", "list_decoders", "format_frame", "format_rows",
     "bitmap_table", "bitmap_summary", "dictionary_all", "dictionary_search",
+    "pick_profile",
     "session", "converters",
 ]

@@ -45,6 +45,28 @@ def test_render_odd_length_raises():
         formatter.render("123", "hex", 16)
 
 
+def test_render_odd_length_message():
+    with pytest.raises(ValueError, match="debe ser par"):
+        formatter.render("123", "hex", 16)
+
+
+@pytest.mark.parametrize("bad", ["12ZZ", "GG", "0XGG"])
+def test_render_rejects_non_hex(bad):
+    with pytest.raises(ValueError, match="carácter no permitido"):
+        formatter.render(bad, "hex", 16)
+    with pytest.raises(ValueError, match="carácter no permitido"):
+        formatter.line_count(bad, 16)
+
+
+def test_render_does_not_mutate_frame():
+    frame = "00 64 60 80\n00 01 02"
+    copy = frame
+    out = formatter.render(frame, "hex", 8)
+    assert frame == copy
+    assert "00 64 60 80" in out
+    assert out == formatter.render("00646080000102", "hex", 8)
+
+
 def test_render_bad_style_raises():
     with pytest.raises(ValueError):
         formatter.render("12", "xml", 16)

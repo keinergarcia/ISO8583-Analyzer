@@ -30,11 +30,14 @@ from PySide6.QtWidgets import (
 )
 
 from core import api, converters
+from core.currency import detector as currency_detector
 from core.exporter import result_to_json, result_to_text
+from core.field_interpreter import interpret
 from core.fields import translate
 from core.history import HistoryManager
 from core.mti import MTI_DESCRIPTIONS
 from core.parser import ParseError, ParseOptions
+from core.transaction_summary import TransactionSummary
 from core.utils import chunk_bytes
 
 from .controller import Controller
@@ -84,6 +87,10 @@ def build_sample_emv():
 CONVERSIONS = [
     ("HEX → ASCII", converters.hex_to_ascii),
     ("ASCII → HEX", converters.ascii_to_hex),
+    ("HEX → Binario", converters.hex_to_binary),
+    ("Binario → HEX", converters.binary_to_hex),
+    ("Decimal → Binario", converters.decimal_to_binary),
+    ("Binario → Decimal", converters.binary_to_decimal),
     ("BCD → Decimal", converters.bcd_to_decimal),
     ("Decimal → BCD (HEX)", converters.decimal_to_bcd),
     ("HEX → Decimal (int)", converters.hex_to_decimal),
@@ -232,11 +239,10 @@ class MainWindow(QMainWindow):
         self.combo_enc.addItem("ASCII", "ascii")
         self.combo_enc.addItem("Híbrido", "hybrid")
         self.combo_profile = QComboBox()
+        self.combo_profile.addItem("Automático", "auto")
         for p in api.list_profiles():
             self.combo_profile.addItem(p["name"], p["name"])
-        idx = self.combo_profile.findData(api.get_default_profile().name)
-        if idx >= 0:
-            self.combo_profile.setCurrentIndex(idx)
+        self.combo_profile.setCurrentIndex(0)
 
         grid = QGridLayout()
         grid.setHorizontalSpacing(10)
@@ -499,7 +505,17 @@ class MainWindow(QMainWindow):
         )
         try:
             start = time.perf_counter()
-            msg = api.decode(text, profile_name=self.controller.active_profile, options=opts)
+            profile_name = self.controller.active_profile
+            if profile_name == "auto":
+                probe = ParseOptions(
+                    has_tpdu=opts.has_tpdu,
+                    numeric_encoding=opts.numeric_encoding,
+                    mti_offset=opts.mti_offset,
+                    mti_auto=opts.mti_auto,
+                    debug=False,
+                )
+                profile_name = api.pick_profile(text, probe) or api.get_default_profile().name
+            msg = api.decode(text, profile_name=profile_name, options=opts)
             result = msg.legacy
             override = self._mti_override
             if override and result.mti_offset_bytes is not None:
@@ -508,7 +524,7 @@ class MainWindow(QMainWindow):
                 if len(clean) >= pos + 4 and (result.mti is None or result.mti.hex != override):
                     text = clean[:pos] + override + clean[pos + 4:]
                     self.input_edit.setPlainText(text)
-                    msg = api.decode(text, profile_name=self.controller.active_profile, options=opts)
+                    msg = api.decode(text, profile_name=profile_name, options=opts)
                     result = msg.legacy
             elapsed = (time.perf_counter() - start) * 1000
         except ParseError as exc:
@@ -656,6 +672,76 @@ class MainWindow(QMainWindow):
         card.layout.addLayout(chips)
         self.results_layout.addWidget(card)
 
+        # Resumen de transacción
+        summary = TransactionSummary(result)
+        card = Card()
+        card.layout.addWidget(SectionTitle("Resumen de Transacción"))
+        amt = summary.amount()
+        if amt["available"]:
+            self._kv(card, "Monto de la transacción", amt["formatted"], mono=False)
+            self._kv(card, "Monto bruto DE4", amt["raw"])
+        elif amt["present"]:
+            self._kv(card, "Monto bruto", amt["raw"])
+            self._kv(card, "Monto interpretado", "No disponible", mono=False)
+            self._kv(card, "Motivo", amt["reason"], mono=False)
+        else:
+            self._kv(card, "Monto", "No disponible", mono=False)
+            self._kv(card, "Motivo", amt["reason"], mono=False)
+        cur = summary.currency()
+        if cur["detected"]:
+            self._kv(card, "Moneda", cur["currency"], mono=False)
+            self._kv(card, "Código ISO", cur["code"])
+            self._kv(card, "Fuente de moneda", cur["source"], mono=False)
+            if cur["name"]:
+                self._kv(card, "Descripción", cur["name"], mono=False)
+            if cur["minor_units"] is not None:
+                self._kv(card, "Minor units", str(cur["minor_units"]))
+            if cur["mismatch"]:
+                card.layout.addWidget(make_badge("⚠ Advertencia de moneda", "warn"))
+                self._kv(card, "Estado", "Los códigos de moneda no coinciden", mono=False)
+        else:
+            self._kv(card, "Moneda", "No detectada", mono=False)
+        tm = summary.time()
+        if tm["valid"]:
+            self._kv(card, "Hora de la transacción", tm["formatted"])
+            self._kv(card, "DE12", tm["raw"])
+        elif tm["present"]:
+            self._kv(card, "Hora", "Valor inválido", mono=False)
+        else:
+            self._kv(card, "Hora", "No disponible", mono=False)
+            self._kv(card, "Motivo", tm["reason"], mono=False)
+        dt = summary.date()
+        if dt["valid"]:
+            self._kv(card, "Fecha de la transacción", dt["formatted"])
+            self._kv(card, "DE13", dt["raw"])
+        elif dt["present"]:
+            self._kv(card, "Fecha", "Valor inválido", mono=False)
+        else:
+            self._kv(card, "Fecha", "No disponible", mono=False)
+            self._kv(card, "Motivo", dt["reason"], mono=False)
+        self.results_layout.addWidget(card)
+
+        # Moneda de transacción
+        currency_report = currency_detector().detect(result)
+        if currency_report.detected:
+            card = Card()
+            card.layout.addWidget(SectionTitle("Moneda de Transacción"))
+            primary = currency_report.primary or currency_report.emv
+            if primary:
+                self._kv(card, "Fuente", primary.source, mono=False)
+                self._kv(card, "Código ISO", primary.code)
+                self._kv(card, "Moneda", primary.currency)
+                if primary.name:
+                    self._kv(card, "Descripción", primary.name, mono=False)
+            else:
+                self._kv(card, "Moneda", "No detectada", mono=False)
+            if currency_report.secondary:
+                self._kv(card, "Secundaria (DE51)",
+                         f"{currency_report.secondary.code} {currency_report.secondary.currency}")
+            if currency_report.mismatch:
+                card.layout.addWidget(make_badge("⚠ Diferencia de moneda detectada", "warn"))
+            self.results_layout.addWidget(card)
+
         # Campos ausentes (plegable)
         present = set(result.active_fields)
         absent = [n for n in range(2, 129) if n not in present]
@@ -734,6 +820,8 @@ class MainWindow(QMainWindow):
             desc.setWordWrap(True)
             name_col.addWidget(desc)
         header.addLayout(name_col, 1)
+        interp = interpret(f)
+        header.addWidget(make_badge(interp.label, "green" if interp.category == "text" else "accent"))
         for badge in field_badges(f):
             header.addWidget(badge)
         card.layout.addLayout(header)
@@ -758,6 +846,11 @@ class MainWindow(QMainWindow):
         card.layout.addLayout(value_row)
 
         self._kv(card, "Hex", chunk_bytes(f.raw_hex), copy=f.raw_hex, small=True)
+        if f.note:
+            note = QLabel(f"ℹ {f.note}")
+            note.setObjectName("muted")
+            note.setWordWrap(True)
+            card.layout.addWidget(note)
         if f.number == 55 and f.emv:
             divider = QFrame()
             divider.setFrameShape(QFrame.HLine)
@@ -776,9 +869,9 @@ class MainWindow(QMainWindow):
         lay.setSpacing(10)
         title_label = QLabel(title)
         title_label.setObjectName("muted")
-        title_label.setFixedWidth(90)
         lay.addWidget(title_label)
         value_label = QLabel(str(value))
+        value_label.setWordWrap(True)
         value_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         if strong:
             value_label.setObjectName("monoValue")
@@ -907,6 +1000,10 @@ class MainWindow(QMainWindow):
         swaps = {
             "HEX → ASCII": "ASCII → HEX",
             "ASCII → HEX": "HEX → ASCII",
+            "HEX → Binario": "Binario → HEX",
+            "Binario → HEX": "HEX → Binario",
+            "Decimal → Binario": "Binario → Decimal",
+            "Binario → Decimal": "Decimal → Binario",
             "BCD → Decimal": "Decimal → BCD (HEX)",
             "Decimal → BCD (HEX)": "BCD → Decimal",
             "HEX → Decimal (int)": "Decimal → HEX (int)",

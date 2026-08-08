@@ -54,6 +54,7 @@ def fielddef_from_dict(number, d):
         int(d.get("length", 0)),
         d.get("length_type", "fixed"),
         d.get("description", d.get("name", f"DE{number}")),
+        d.get("encoding", ""),
     )
 
 
@@ -78,6 +79,9 @@ def profile_from_dict(data):
         supports_secondary_bitmap=bool(data.get("supports_secondary_bitmap", True)),
         elements=elements,
         description=data.get("description", ""),
+        llvar_prefix_bytes=int(data.get("llvar_prefix_bytes", 1)),
+        lllvar_prefix_bytes=int(data.get("lllvar_prefix_bytes", 2)),
+        lllvar_4digit_bcd=bool(data.get("lllvar_4digit_bcd", False)),
     )
 
 
@@ -99,6 +103,7 @@ def register(profile):
 
 def get(name):
     """Devuelve un perfil por nombre; si no existe, el perfil por defecto."""
+    _ensure_builtin()
     if not name:
         return get_default()
     profile = _registry.get(name)
