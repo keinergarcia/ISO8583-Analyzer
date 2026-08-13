@@ -8,7 +8,6 @@ conflictos DE49 vs 5F2A, campos ausentes y valores inválidos (DE12/DE13).
 import json
 
 import core.api as api
-from core.currency import detect_currency
 from core.exporter import result_to_json, result_to_text
 from core.parser import ParseOptions, parse_message
 from core.transaction_summary import TransactionSummary

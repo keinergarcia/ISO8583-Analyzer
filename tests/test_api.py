@@ -2,7 +2,6 @@
 """Tests de la fachada pública core.api."""
 
 import core.api as api
-from core.model.message import Message
 from core.parser import ParseError, ParseOptions, parse_message
 from tests.fixtures.frames import (
     FRAME_ASCII_HEX,

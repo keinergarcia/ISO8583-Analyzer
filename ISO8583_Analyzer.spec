@@ -18,6 +18,7 @@ a = Analysis(
         (str(project_root / "assets"), "assets"),
         (str(project_root / "history"), "history"),
         (str(project_root / "core" / "profiles" / "specs"), "core/profiles/specs"),
+        (str(project_root / "core" / "reference" / "data"), "core/reference/data"),
         (str(project_root / "plugins"), "plugins"),
         (str(project_root / "fields.json"), "."),
         (str(project_root / "currencies.json"), "."),

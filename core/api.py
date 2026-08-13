@@ -14,8 +14,10 @@ from .parser import ParseError, ParseOptions, parse_message
 from .protocols.iso8583 import decoder as _iso8583_decoder  # noqa: F401  (registra el decoder)
 from .protocols.registry import get_decoder as _get_decoder
 from .profiles import registry as profile_registry
+from .reference import get_reference as _get_reference
 from .services.session import get_session
 from .tools import bitmap_view, dictionary, formatter
+from .validation import validate as _validate
 
 session = get_session()
 
@@ -108,6 +110,16 @@ def validate(message):
     return IssueList()
 
 
+def validate_frame(raw, options=None):
+    """Valida una trama cruda con el motor de validación determinístico."""
+    return _validate(raw, options)
+
+
+def validate_result(result):
+    """Valida un AnalysisResult ya decodificado con el motor determinístico."""
+    return _validate(result)
+
+
 def format_frame(hex_str, style="hex", cols=16):
     return formatter.render(hex_str, style, cols)
 
@@ -132,12 +144,71 @@ def dictionary_search(query, profile_name=None):
     return dictionary.search(profile_registry.get(profile_name), query)
 
 
+# ---------------------------------------------------------------------------
+# Centro de Referencia (catálogos bilingües ISO 8583)
+# ---------------------------------------------------------------------------
+
+def reference_search(query, lang="es", limit=60):
+    """Búsqueda global en todos los catálogos del Centro de Referencia."""
+    return _get_reference().search(query, lang=lang, limit=limit)
+
+
+def reference_field(number, lang="es"):
+    return _get_reference().field(number)
+
+
+def reference_mti(code, lang="es"):
+    return _get_reference().mti(code)
+
+
+def reference_response_code(code, lang="es"):
+    return _get_reference().response_code(code)
+
+
+def reference_currency(code, lang="es"):
+    return _get_reference().currency(code)
+
+
+def reference_versions(lang="es"):
+    return _get_reference().versions()
+
+
+def reference_data_types(lang="es"):
+    return _get_reference().data_types()
+
+
+def reference_length_types(lang="es"):
+    return _get_reference().length_types()
+
+
+def reference_profiles(lang="es"):
+    return _get_reference().profiles()
+
+
+def reference_languages():
+    return _get_reference().languages()
+
+
+def reference_currencies(lang="es"):
+    return _get_reference().currencies()
+
+
+def reference_service():
+    """Devuelve la instancia del servicio de referencia (catálogos bilingües)."""
+    return _get_reference()
+
+
 __all__ = [
     "Message", "DecodedNode", "IssueList", "ValidationIssue",
     "ParseError", "ParseOptions", "parse_message",
-    "decode", "analyze", "validate", "list_profiles", "load_profile",
+    "decode", "analyze", "validate", "validate_frame", "validate_result",
+    "list_profiles", "load_profile",
     "get_default_profile", "list_decoders", "format_frame", "format_rows",
     "bitmap_table", "bitmap_summary", "dictionary_all", "dictionary_search",
+    "reference_search", "reference_field", "reference_mti",
+    "reference_response_code", "reference_currency", "reference_versions",
+    "reference_data_types", "reference_length_types", "reference_profiles",
+    "reference_languages", "reference_currencies", "reference_service",
     "pick_profile",
     "session", "converters",
 ]

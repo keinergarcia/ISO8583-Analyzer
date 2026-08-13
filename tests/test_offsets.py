@@ -84,7 +84,6 @@ def test_literal_content_in_field_not_validated_as_hex():
 
 
 def test_debug_mode_reports_offset_and_fields(capsys):
-    import core.utils as utils
     parse_message(FRAME_BASIC, ParseOptions(debug=True))
     out = capsys.readouterr().out
     assert "Offset inicial usado (bytes antes del MTI): 7" in out

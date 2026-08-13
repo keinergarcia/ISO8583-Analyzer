@@ -118,9 +118,9 @@ def test_pick_profile_selects_promerica_for_promerica_frames():
 
 def test_promerica_de63_frame_parses_fields():
     """Trama 0800 con DE63 (JSON) y DE64 (MAC con cabecera GZIP): los campos
-    se leen en orden correcto, sin desbordes. El contenido GZIP que sigue al
-    DE64 no está mapeado por el bitmap, así que queda como 'bytes sin analizar'
-    (no es un desborde del parser)."""
+    se leen en orden correcto, sin desbordes. DE64 permanece fixed de 8 bytes
+    (ISO 8583) y el GZIP que continúa tras el campo se explica como payload
+    propietario encapsulado, no como 'bytes sin analizar'."""
     msg = api.decode(FRAME_PROMERICA_DE63, profile_name=PROMERICA_PROFILE)
     r = msg.legacy
     assert r.mti.hex == "0800"
@@ -149,6 +149,87 @@ def test_promerica_de64_gzip_note():
     assert "592" in note
     assert "offset_hex" in fields[64].as_dict()
     assert fields[64].as_dict()["note"] == note
+
+
+def _frame_de64(de64_hex, trailing_hex=""):
+    """Construye una trama BCD mínima con DE3 y DE64 como último campo."""
+    bitmap = "2000000000000001"  # DE3 + DE64
+    body = "6000000000" + "0200" + bitmap + "990001" + de64_hex + trailing_hex
+    return "%04X" % (len(body) // 2) + body
+
+
+def test_promerica_de63_trailing_payload_confirmed():
+    """El DE64 (02501F8B08000000) declara 0x0250 = 592 bytes de payload
+    comprimido. Los 592 bytes (6 dentro del campo + 586 posteriores) forman un
+    stream GZIP válido que descomprime a 1415 bytes: la trama queda explicada
+    y NO se reporta 'bytes sin analizar'."""
+    r = parse_message(FRAME_PROMERICA_DE63, _opts())
+    tp = r.trailing_payload
+    assert tp is not None
+    assert tp.status == "confirmed"
+    assert tp.kind == "gzip"
+    assert tp.declared_length == 592
+    assert tp.available_length == 592
+    assert tp.decompressed_length == 1415
+    assert tp.offset_hex == 324
+    assert tp.payload_hex.startswith("1F8B08")
+    assert len(tp.payload_hex) // 2 == 592
+    assert not any("sin analizar" in w for w in r.warnings)
+    assert any("payload propietario encapsulado tras DE64" in w for w in r.warnings)
+
+
+def test_promerica_de63_trailing_payload_in_validation():
+    """El motor de validación emite TRAILING_DATA_EXPLAINED (INFO) en lugar de
+    la advertencia TRAILING_DATA para un payload propietario confirmado."""
+    from core.validation import SEVERITY_WARNING, validate_result
+    r = parse_message(FRAME_PROMERICA_DE63, _opts())
+    vr = validate_result(r)
+    codes = [f.code for f in vr.findings]
+    assert "TRAILING_DATA_EXPLAINED" in codes
+    assert "TRAILING_DATA" not in [
+        f.code for f in vr.findings if f.severity == SEVERITY_WARNING
+    ]
+    info = next(f for f in vr.findings if f.code == "TRAILING_DATA_EXPLAINED")
+    assert "592" in info.value
+
+
+def test_promerica_de64_trailing_not_gzip_preserves_warning():
+    """Test negativo: trailing data real que NO es GZIP. DE64 con un MAC normal
+    (A1B23C44A1B23C44) seguido de bytes arbitrarios no debe detectarse como
+    payload propietario y debe conservar la advertencia TRAILING_DATA."""
+    from core.validation import SEVERITY_WARNING, validate_result
+    frame = _frame_de64("A1B23C44A1B23C44", "DEADBEEF00")
+    r = parse_message(frame, ParseOptions(numeric_encoding="bcd"))
+    assert r.trailing_payload is None
+    assert any("sin analizar" in w for w in r.warnings)
+    vr = validate_result(r)
+    assert "TRAILING_DATA" in [
+        f.code for f in vr.findings if f.severity == SEVERITY_WARNING
+    ]
+    f = next(x for x in vr.findings if x.code == "TRAILING_DATA")
+    assert "5 bytes" in f.value
+
+
+def test_promerica_de64_possible_gzip_keeps_warning():
+    """Magic GZIP presente y prefijo de longitud, pero la longitud declarada no
+    coincide con la disponible: la detección queda 'possible' y se conserva la
+    advertencia de datos sin analizar."""
+    from core.validation import SEVERITY_WARNING, validate_result
+    frame = _frame_de64("02501F8B08000000", "AABBCCDD")
+    r = parse_message(frame, ParseOptions(numeric_encoding="bcd"))
+    tp = r.trailing_payload
+    assert tp is not None
+    assert tp.status == "possible"
+    assert tp.kind == "possible_gzip"
+    assert tp.declared_length == 592
+    assert tp.available_length == 10
+    assert tp.decompressed_length is None
+    assert any("sin analizar" in w for w in r.warnings)
+    assert any("Posible payload propietario" in w for w in r.warnings)
+    vr = validate_result(r)
+    assert "TRAILING_DATA" in [
+        f.code for f in vr.findings if f.severity == SEVERITY_WARNING
+    ]
 
 
 def test_promerica_debug_prints_field_details(capsys):

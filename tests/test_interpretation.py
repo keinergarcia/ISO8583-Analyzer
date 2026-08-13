@@ -7,8 +7,7 @@ clasificación no altera el parseo ni el valor de los campos.
 
 import core.api as api
 from core.exporter import result_to_json, result_to_text
-from core.field_interpreter import FieldInterpreter, interpret
-from core.parser import ParseOptions, parse_message
+from core.field_interpreter import FieldInterpreter
 
 PROMERICA_PROFILE = "promerica"
 

@@ -43,13 +43,6 @@ def is_removable(ch):
     return ch in SEPARATOR_SET or is_invisible(ch)
 
 
-def resource_base():
-    """Directorio base para recursos de solo lectura (compatible con PyInstaller)."""
-    if getattr(sys, "frozen", False):
-        return Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent))
-    return Path(__file__).resolve().parent.parent
-
-
 def clean_hex(text):
     """Elimina espacios, separadores y caracteres invisibles, conservando solo hex."""
     if text is None:
@@ -170,21 +163,28 @@ def chunk_bytes(hex_str):
     return " ".join(pairs)
 
 
-def hex_to_bytes(hex_str):
-    """Convierte una cadena hex en bytes (con manejo de errores)."""
-    return bytes.fromhex(hex_str)
+def organize_hex(text, bytes_per_line=16):
+    """Organiza visualmente una trama HEX continua en líneas de N bytes.
 
-
-def safe_ascii(value_hex):
-    """Decodifica hex a texto ASCII legible (reemplazando bytes no imprimibles)."""
-    try:
-        raw = bytes.fromhex(value_hex)
-    except (ValueError, TypeError):
-        return ""
-    return "".join(chr(b) if 0x20 <= b <= 0x7E else "." for b in raw)
-
-
-def truncate(text, limit=80):
-    """Recorta un texto para visualización agregando puntos suspensivos."""
-    text = str(text)
-    return text if len(text) <= limit else text[:limit] + "..."
+    Devuelve (organizado, mensaje_error). No analiza la trama ni la modifica:
+    únicamente elimina espacios, tabs y saltos de línea, valida que el resto
+    sea HEX válido y par, inserta saltos de línea cada ``bytes_per_line``
+    bytes y comprueba que al quitar de nuevo los saltos el resultado sea
+    exactamente igual a la trama normalizada original.
+    """
+    if text is None:
+        return "", "La trama está vacía."
+    s = str(text)
+    cleaned = "".join(ch for ch in s if ch not in (" ", "\t", "\r", "\n"))
+    if not cleaned:
+        return "", "La trama está vacía."
+    if any(ch not in HEX_SET for ch in cleaned):
+        return "", "La trama contiene caracteres que no son hexadecimales válidos."
+    if len(cleaned) % 2 != 0:
+        return "", "La trama debe tener un número par de caracteres hexadecimales."
+    per_line = max(1, int(bytes_per_line)) * 2
+    lines = [cleaned[i:i + per_line] for i in range(0, len(cleaned), per_line)]
+    organized = "\n".join(lines)
+    if organized.replace("\n", "").replace("\r", "") != cleaned:
+        return "", "La verificación de integridad falló: no se modificó el contenido."
+    return organized, ""

@@ -3,7 +3,7 @@
 
 import time
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
@@ -31,6 +31,7 @@ from PySide6.QtWidgets import (
 
 from core import api, converters
 from core.currency import detector as currency_detector
+from core.emv import enrich_result_emv
 from core.exporter import result_to_json, result_to_text
 from core.field_interpreter import interpret
 from core.fields import translate
@@ -38,11 +39,14 @@ from core.history import HistoryManager
 from core.mti import MTI_DESCRIPTIONS
 from core.parser import ParseError, ParseOptions
 from core.transaction_summary import TransactionSummary
-from core.utils import chunk_bytes
+from core.utils import chunk_bytes, organize_hex
+from core.validation import validate_result
 
 from .controller import Controller
 from .dialogs import AboutDialog, show_error
 from .panels.formatter import FormatterPanel
+from .panels.frame_prep import FramePrepPanel
+from .panels.reference import ReferenceCenterPanel
 from .widgets import (
     Card,
     CollapsibleSection,
@@ -110,6 +114,7 @@ class MainWindow(QMainWindow):
         self.history = HistoryManager()
         self._current = None
         self._mti_override = None
+        self._ref_field_map = {}
         self._conversion_labels = [c[0] for c in CONVERSIONS]
         self.controller = Controller(self)
 
@@ -191,11 +196,18 @@ class MainWindow(QMainWindow):
         self.btn_analyze = QPushButton("▶  Analizar")
         self.btn_analyze.setObjectName("bigButton")
         self.btn_analyze.setMinimumHeight(46)
+        self.btn_organize = QPushButton("Organizar trama")
+        self.btn_organize.setObjectName("ghostButton")
+        self.btn_organize.setToolTip(
+            "Organiza visualmente la trama HEX en líneas de 16 bytes, "
+            "sin analizarla ni modificar los datos."
+        )
         self.btn_paste = QPushButton("Pegar")
         self.btn_paste.setObjectName("ghostButton")
         self.btn_clear = QPushButton("Limpiar")
         self.btn_clear.setObjectName("ghostButton")
         btn_row.addWidget(self.btn_analyze, 2)
+        btn_row.addWidget(self.btn_organize)
         btn_row.addWidget(self.btn_paste)
         btn_row.addWidget(self.btn_clear)
         lay.addLayout(btn_row)
@@ -295,8 +307,13 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self._build_history_tab(), "Historial")
         self.tabs.addTab(self._build_converters_tab(), "Conversores")
         self.tabs.addTab(FormatterPanel(), "Formato")
-        lay.addWidget(self.tabs)
+        self.reference_panel = ReferenceCenterPanel()
+        self.tabs.addTab(self.reference_panel, "Referencia")
 
+        self.frame_prep_panel = FramePrepPanel()
+        self.tabs.addTab(self.frame_prep_panel, "Preparador")
+
+        lay.addWidget(self.tabs)
         return panel
 
     def _build_analysis_tab(self):
@@ -451,6 +468,7 @@ class MainWindow(QMainWindow):
 
     def _connect(self):
         self.btn_analyze.clicked.connect(lambda: self._analyze())
+        self.btn_organize.clicked.connect(self._organize_frame)
         self.btn_paste.clicked.connect(self._paste)
         self.btn_clear.clicked.connect(lambda: self.input_edit.clear())
         self.btn_sample.clicked.connect(lambda: self._load_sample(build_sample_basic()))
@@ -481,11 +499,44 @@ class MainWindow(QMainWindow):
         self.combo_mti.currentIndexChanged.connect(self._on_mti_changed)
         self.btn_mti_auto.clicked.connect(self._reset_mti_auto)
 
+        self.frame_prep_panel.send_requested.connect(self._on_frame_prep_send)
+
+    def _on_frame_prep_send(self, clean_hex):
+        """Recibe la trama limpia del Preparador y la deja en el área de entrada.
+
+        NO analiza automáticamente: el usuario pulsa Analizar (política del
+        Preparador de Tramas).
+        """
+        if not clean_hex:
+            return
+        self.input_edit.setPlainText(clean_hex)
+        self.tabs.setCurrentIndex(0)  # pestaña "Análisis"
+        self._update_status("Trama preparada y lista para analizar. Pulse Analizar.")
+
     # ------------------------------------------------------------- actions
     def _paste(self):
         text = QApplication.clipboard().text()
         if text:
             self.input_edit.setPlainText(text)
+
+    def _organize_frame(self):
+        """Organiza visualmente la trama pegada en líneas de 16 bytes.
+
+        Solo inserta saltos de línea; no analiza la trama ni genera reporte.
+        Si la trama no es HEX válida o falla la verificación de integridad,
+        no modifica el contenido del usuario y muestra un error.
+        """
+        organized, error = organize_hex(self.input_edit.toPlainText())
+        if error:
+            self._update_status("Organizar trama: no se modificó el contenido.")
+            show_error(self, error, "Organizar trama")
+            return
+        self.input_edit.setPlainText(organized)
+        hex_len = len(organized.replace("\n", ""))
+        self._update_status(
+            f"Trama organizada · {hex_len // 2} bytes · 16 bytes por línea · "
+            f"{organized.count(chr(10)) + 1} líneas."
+        )
 
     def _load_sample(self, raw):
         self.input_edit.setPlainText(raw)
@@ -642,6 +693,12 @@ class MainWindow(QMainWindow):
             top.addWidget(big)
             top.addWidget(make_badge(result.mti.description, "green"))
             top.addStretch(1)
+            mti_ref = QPushButton("Ficha MTI")
+            mti_ref.setObjectName("ghostButton")
+            mti_ref.setCursor(Qt.PointingHandCursor)
+            mti_ref.setFixedHeight(28)
+            mti_ref.clicked.connect(lambda _=False, h=result.mti.hex: self._open_reference_mti(h))
+            top.addWidget(mti_ref)
             top.addWidget(CopyButton(lambda: result.mti.hex, "Copiar"))
             card.layout.addLayout(top)
             self._kv(card, "Versión", result.mti.version, mono=False)
@@ -721,6 +778,25 @@ class MainWindow(QMainWindow):
             self._kv(card, "Motivo", dt["reason"], mono=False)
         self.results_layout.addWidget(card)
 
+        # Validación de Trama
+        validation = validate_result(result)
+        card = Card()
+        card.layout.addWidget(SectionTitle("Validación de Trama"))
+        badge_kind = "green" if validation.status == "valid" else (
+            "warn" if validation.status == "warnings" else "error")
+        card.layout.addWidget(make_badge(validation.status_label, badge_kind))
+        for finding in validation.errors:
+            self._validation_row(card, "❌", finding, "errorText")
+        for finding in validation.warnings:
+            self._validation_row(card, "⚠", finding, "warnText")
+        for finding in validation.infos:
+            self._validation_row(card, "✓", finding, "infoText")
+        if not validation.findings:
+            note = QLabel("No se detectaron hallazgos adicionales.")
+            note.setObjectName("muted")
+            card.layout.addWidget(note)
+        self.results_layout.addWidget(card)
+
         # Moneda de transacción
         currency_report = currency_detector().detect(result)
         if currency_report.detected:
@@ -758,9 +834,36 @@ class MainWindow(QMainWindow):
 
         # EMV
         if result.emv:
+            _src = summary.source
+            enrich_result_emv(result,
+                              getattr(_src, "currency", None) if _src else None,
+                              getattr(_src, "minor_units", None) if _src else None)
             card = Card()
             card.layout.addWidget(SectionTitle("Campo 55 · EMV"))
             add_tlv_rows(card, result.emv)
+            self.results_layout.addWidget(card)
+
+        # Payload posterior (p. ej. GZIP propietario tras DE64)
+        if result.trailing_payload is not None:
+            p = result.trailing_payload
+            card = Card()
+            card.layout.addWidget(SectionTitle("Payload posterior"))
+            if p.status == "confirmed":
+                self._kv(card, "Tipo", "GZIP (gzip comprimido)", mono=False)
+            else:
+                self._kv(card, "Tipo", "Posible payload propietario", mono=False)
+                self._kv(card, "Motivo", p.reason, mono=False)
+            self._kv(card, "Longitud declarada", f"{p.declared_length} bytes")
+            self._kv(card, "Longitud disponible", f"{p.available_length} bytes")
+            if p.decompressed_length is not None:
+                self._kv(card, "Estado", f"Descomprimido correctamente — {p.decompressed_length} bytes")
+            else:
+                self._kv(card, "Estado", "No se pudo descomprimir")
+            if p.preview:
+                preview = QLabel(p.preview)
+                preview.setObjectName("hexSmall")
+                preview.setWordWrap(True)
+                card.layout.addWidget(preview)
             self.results_layout.addWidget(card)
 
         # Data Elements
@@ -824,6 +927,13 @@ class MainWindow(QMainWindow):
         header.addWidget(make_badge(interp.label, "green" if interp.category == "text" else "accent"))
         for badge in field_badges(f):
             header.addWidget(badge)
+        ref_btn = QPushButton("ℹ  Ficha")
+        ref_btn.setObjectName("ghostButton")
+        ref_btn.setCursor(Qt.PointingHandCursor)
+        ref_btn.setFixedHeight(26)
+        ref_btn.setToolTip("Abrir la ficha de este campo en el Centro de Referencia")
+        ref_btn.clicked.connect(lambda _=False, ff=f: self._open_reference(ff))
+        header.addWidget(ref_btn)
         card.layout.addLayout(header)
 
         if f.has_error:
@@ -837,6 +947,7 @@ class MainWindow(QMainWindow):
         value_row.setSpacing(8)
         value_label = QLabel(f.value if f.value else "—")
         value_label.setObjectName("fieldValue")
+        value_label.setTextFormat(Qt.PlainText)
         value_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         value_label.setWordWrap(True)
         value_row.addWidget(value_label)
@@ -844,6 +955,35 @@ class MainWindow(QMainWindow):
             value_row.addWidget(CopyButton(lambda f=f: f.value, "Copiar valor"))
         value_row.addStretch(1)
         card.layout.addLayout(value_row)
+
+        if f.number in (49, 50, 51) and f.value and f.value.strip().isdigit():
+            cur = api.reference_currency(f.value.strip())
+            if cur:
+                ref = api.reference_service()
+                cur_row = QHBoxLayout()
+                cur_row.setSpacing(8)
+                cur_lbl = QLabel("Moneda / Currency:")
+                cur_lbl.setObjectName("muted")
+                cur_row.addWidget(cur_lbl)
+                cur_val = QLabel(
+                    f"{cur['numeric']} · {cur['alpha']} — "
+                    f"{ref.loc(cur, 'name', 'es')} / {ref.loc(cur, 'name', 'en')}"
+                )
+                cur_val.setWordWrap(True)
+                cur_row.addWidget(cur_val, 1)
+                cur_btn = QPushButton("Ver")
+                cur_btn.setObjectName("ghostButton")
+                cur_btn.setCursor(Qt.PointingHandCursor)
+                cur_btn.setFixedHeight(26)
+                cur_btn.clicked.connect(
+                    lambda _=False, cc=f.value.strip(): self._open_reference_currency(cc))
+                cur_row.addWidget(cur_btn)
+                card.layout.addLayout(cur_row)
+
+        self._ref_field_map[id(card)] = f
+        card.installEventFilter(self)
+        self._ref_field_map[id(value_label)] = f
+        value_label.installEventFilter(self)
 
         self._kv(card, "Hex", chunk_bytes(f.raw_hex), copy=f.raw_hex, small=True)
         if f.note:
@@ -862,6 +1002,35 @@ class MainWindow(QMainWindow):
             add_tlv_rows(card, f.emv)
         return card
 
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.MouseButtonDblClick:
+            f = self._ref_field_map.get(id(obj))
+            if f is not None:
+                self._open_reference(f)
+                return True
+        return super().eventFilter(obj, event)
+
+    def _open_reference(self, f):
+        """Con doble clic o 'Ficha' en un campo, abre su ficha en el Centro."""
+        self.tabs.setCurrentWidget(self.reference_panel)
+        if f.number in (49, 50, 51) and f.value and f.value.strip().isdigit():
+            if api.reference_currency(f.value.strip()):
+                self.reference_panel.open_currency(f.value.strip())
+                return
+        if f.number == 39 and f.value:
+            if api.reference_response_code(f.value):
+                self.reference_panel.open_response_code(f.value)
+                return
+        self.reference_panel.open_field(f.number)
+
+    def _open_reference_mti(self, mti_hex):
+        self.tabs.setCurrentWidget(self.reference_panel)
+        self.reference_panel.open_mti(mti_hex)
+
+    def _open_reference_currency(self, code):
+        self.tabs.setCurrentWidget(self.reference_panel)
+        self.reference_panel.open_currency(code)
+
     def _kv(self, card, title, value, copy=None, mono=True, strong=False, small=False):
         row = QWidget()
         lay = QHBoxLayout(row)
@@ -869,9 +1038,12 @@ class MainWindow(QMainWindow):
         lay.setSpacing(10)
         title_label = QLabel(title)
         title_label.setObjectName("muted")
+        title_label.setMinimumWidth(90)
+        title_label.setWordWrap(True)
         lay.addWidget(title_label)
         value_label = QLabel(str(value))
         value_label.setWordWrap(True)
+        value_label.setTextFormat(Qt.PlainText)
         value_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         if strong:
             value_label.setObjectName("monoValue")
@@ -886,6 +1058,30 @@ class MainWindow(QMainWindow):
             lay.addWidget(CopyButton(lambda: copy, "Copiar"))
         card.layout.addWidget(row)
         return row, value_label
+
+    def _validation_row(self, card, icon, finding, style_name):
+        """Fila de un hallazgo de validación dentro de la tarjeta."""
+        row = QWidget()
+        lay = QHBoxLayout(row)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(8)
+        lay.addWidget(QLabel(icon))
+        col = QVBoxLayout()
+        col.setSpacing(2)
+        header = QLabel(f"{finding.code}" + (f" · {finding.field}" if finding.field else ""))
+        header.setObjectName("hexSmall")
+        col.addWidget(header)
+        message = QLabel(finding.message)
+        message.setObjectName(style_name)
+        message.setWordWrap(True)
+        col.addWidget(message)
+        if finding.value:
+            value = QLabel(finding.value)
+            value.setObjectName("muted")
+            value.setWordWrap(True)
+            col.addWidget(value)
+        lay.addLayout(col, 1)
+        card.layout.addWidget(row)
 
     def _update_status(self, text):
         self.statusBar().showMessage(text)

@@ -5,7 +5,7 @@ Sustituye las listas planas de strings por issues tipados con severidad y
 código, lo que permite reportes, filtrado en UI y reglas reutilizables.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 
@@ -46,6 +46,3 @@ class IssueList(list):
     @property
     def has_errors(self):
         return any(i.severity == "error" for i in self)
-
-    def as_list(self):
-        return [i.as_dict() for i in self]

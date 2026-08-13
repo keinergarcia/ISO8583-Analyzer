@@ -11,6 +11,7 @@ forma automática: se escanea la trama buscando un MTI válido seguido de un
 bitmap válido y un conjunto de campos que quepan dentro de la trama.
 """
 
+import gzip
 from dataclasses import dataclass, field
 from typing import List, Optional
 
@@ -82,6 +83,43 @@ class ParsedField:
 
 
 @dataclass
+class TrailingPayload:
+    """Payload propietario detectado tras el último campo del bitmap.
+
+    Representa una extensión encapsulada (p. ej. GZIP tras DE64) en lugar de
+    reportar los bytes como "sin analizar". La detección es conservadora:
+
+    - "confirmed": magic GZIP en el byte 2 del campo, el prefijo de longitud
+      coincide exactamente con los bytes disponibles y la descompresión OK.
+    - "possible": hay indicios (magic GZIP / prefijo) pero la longitud no
+      coincide o la descompresión falla; se conserva la advertencia original.
+    """
+
+    kind: str                 # "gzip" | "possible_gzip"
+    declared_length: int      # bytes declarados por el prefijo de longitud
+    available_length: int     # bytes realmente disponibles para el payload
+    payload_hex: str          # hex del payload (desde el fin del prefijo)
+    offset_hex: int           # offset hex en la trama donde inicia el payload
+    status: str               # "confirmed" | "possible"
+    reason: str = ""          # motivo cuando no se pudo confirmar
+    decompressed_length: Optional[int] = None
+    preview: str = ""
+
+    def as_dict(self):
+        return {
+            "kind": self.kind,
+            "declared_length": self.declared_length,
+            "available_length": self.available_length,
+            "payload_hex": self.payload_hex,
+            "offset_hex": self.offset_hex,
+            "status": self.status,
+            "reason": self.reason,
+            "decompressed_length": self.decompressed_length,
+            "preview": self.preview,
+        }
+
+
+@dataclass
 class AnalysisResult:
     raw_clean: str
     length_hex: str
@@ -101,6 +139,7 @@ class AnalysisResult:
     stats: dict = field(default_factory=dict)
     mti_offset_bytes: Optional[int] = None
     header_hex: str = ""
+    trailing_payload: Optional[TrailingPayload] = None
 
     def as_dict(self):
         return {
@@ -122,6 +161,8 @@ class AnalysisResult:
             "stats": self.stats,
             "mti_offset_bytes": self.mti_offset_bytes,
             "header_hex": self.header_hex,
+            "trailing_payload": self.trailing_payload.as_dict()
+            if self.trailing_payload else None,
         }
 
 
@@ -180,10 +221,6 @@ def _detect_encoding(hex_str, opts=None):
 # ---------------------------------------------------------------------------
 # Lectura de campos
 # ---------------------------------------------------------------------------
-
-def _len_prefix_hex(length_type):
-    return {"llvar": 2, "lllvar": 4, "llllvar": 4}[length_type]
-
 
 def _bcd_len_value(seg, length_type="llvar", lllvar_4digit=False):
     """Interpreta un prefijo de longitud BCD como decimal.
@@ -271,7 +308,10 @@ def _read_len_digits_ascii(h, pos, length_type, debug=None):
 def _bcd_to_digits(raw_hex, digits):
     s = raw_hex.upper()
     if digits % 2 == 1 and s:
-        s = s[:-1] if s[-1] == "F" else s
+        # Longitud de dígitos impar: el último nibble del byte final es
+        # siempre relleno (F, 0 o cualquier valor) y no forma parte del
+        # valor. Se descarta siempre, no solo cuando el relleno es 'F'.
+        s = s[:-1]
     return s
 
 
@@ -396,8 +436,9 @@ def _gzip_note(raw_hex):
         try:
             plen = int(up[:4], 16)
             parts.append(
-                f"los 2 bytes previos indican un payload comprimido de {plen} bytes "
-                f"que continúa tras este campo"
+                f"los 2 primeros bytes son un prefijo de longitud: "
+                f"payload comprimido de {plen} bytes que continúa tras este campo "
+                f"(estructura propietaria detectada)"
             )
         except ValueError:
             pass
@@ -694,6 +735,92 @@ def _read_fields_hex(clean, headers, encoding, issues, errors, debug=None,
     return fields, pos, active
 
 
+# ---------------------------------------------------------------------------
+# Detección de payload propietario tras el último campo (p. ej. GZIP tras DE64)
+# ---------------------------------------------------------------------------
+
+GZIP_MAGIC = "1F8B08"
+GZIP_MAGIC_BYTES = 3
+
+
+def _detect_trailing_payload(clean, fields, data_start_hex, consumed_hex):
+    """Detecta un payload encapsulado que continúa tras el último campo.
+
+    Solo aplica cuando el último campo parseado es DE64 (binario fixed de
+    8 bytes, sin error) y dentro de él aparece la estructura:
+
+        [2 bytes prefijo de longitud big-endian] [1F 8B 08 ... GZIP]
+
+    El payload declarado por el prefijo comienza en el byte 2 del campo
+    (offset_hex = campo.offset_hex + 4). Devuelve un TrailingPayload en
+    estados "confirmed" (magic + longitud exacta + descompresión OK) o
+    "possible" (indicios presentes pero sin verificación concluyente), o None
+    si no hay evidencia. NUNCA consume bytes: solo describe lo que ya hay.
+    """
+    total_hex = len(clean)
+    remaining_hex = total_hex - data_start_hex - consumed_hex
+    if remaining_hex <= 0 or not fields:
+        return None
+    last = fields[-1]
+    if last.has_error or last.number != 64:
+        return None
+    if last.length_type != "fixed" or len(last.raw_hex) != 16:
+        return None
+
+    raw = last.raw_hex.upper()
+    if raw[4:4 + len(GZIP_MAGIC)] != GZIP_MAGIC:
+        return None
+    try:
+        plen = int(raw[0:4], 16)
+    except ValueError:
+        return None
+    if plen <= 0:
+        return None
+
+    remaining_bytes = remaining_hex // 2
+    payload_hex = raw[4:] + clean[total_hex - remaining_hex:]
+    available = (8 - 2) + remaining_bytes
+    offset_hex = last.offset_hex + 4
+
+    declared_hex_len = plen * 2
+    attempt = payload_hex[:declared_hex_len] if plen <= available else payload_hex
+    decompressed_length = None
+    preview = ""
+    decompress_error = ""
+    try:
+        out = gzip.decompress(bytes.fromhex(attempt))
+        decompressed_length = len(out)
+        preview = "".join(
+            chr(b) if 0x20 <= b <= 0x7E else "." for b in out[:160]
+        )
+    except Exception as exc:  # BadGzipFile / EOFError / zlib.error
+        decompress_error = str(exc) or type(exc).__name__
+
+    if decompressed_length is not None and plen == available:
+        status, kind = "confirmed", "gzip"
+        reason = ""
+    else:
+        status, kind = "possible", "possible_gzip"
+        if decompressed_length is None:
+            reason = (f"el prefijo declara {plen} bytes y hay {available} "
+                      f"disponibles; el stream GZIP no pudo descomprimirse"
+                      + (f" ({decompress_error})" if decompress_error else "") + ".")
+        else:
+            reason = (f"el prefijo declara {plen} bytes pero solo hay {available} "
+                      f"disponibles.")
+    return TrailingPayload(
+        kind=kind,
+        declared_length=plen,
+        available_length=available,
+        payload_hex=payload_hex,
+        offset_hex=offset_hex,
+        status=status,
+        reason=reason,
+        decompressed_length=decompressed_length,
+        preview=preview,
+    )
+
+
 def _assemble(clean, encoding, headers, fields, issues, consumed_hex, mti_offset):
     warnings = list(issues)
     errors = []
@@ -703,16 +830,46 @@ def _assemble(clean, encoding, headers, fields, issues, consumed_hex, mti_offset
     active = parse_bitmap(combined)
 
     declared = headers["declared_hex"]
-    if declared and consumed_hex != declared:
-        warnings.append(
-            f"Longitud declarada ({headers['length_value']} bytes = {declared} hex) "
-            f"no coincide con el contenido analizado ({consumed_hex // 2} bytes = {consumed_hex} hex)."
-        )
     remaining = len(clean) - headers["data_start_hex"] - consumed_hex
-    if remaining > 0:
+    payload = _detect_trailing_payload(clean, fields, headers["data_start_hex"],
+                                       consumed_hex)
+
+    if payload is not None and payload.status == "confirmed":
+        # Payload propietario detectado y validado: los bytes posteriores al
+        # último campo quedan explicados. Se reemplaza el aviso genérico de
+        # "bytes sin analizar" por una descripción exacta y verificada.
+        total_after_start = len(clean) - headers["data_start_hex"]
+        if declared and consumed_hex != declared and total_after_start != declared:
+            warnings.append(
+                f"Longitud declarada ({headers['length_value']} bytes = {declared} hex) "
+                f"no coincide con el contenido de la trama "
+                f"({total_after_start // 2} bytes = {total_after_start} hex)."
+            )
         warnings.append(
-            f"Hay {remaining // 2} bytes de datos sin analizar después del último campo."
+            f"Se detectó un payload propietario encapsulado tras DE64: prefijo de "
+            f"longitud 0x{payload.declared_length:04X} = {payload.declared_length} bytes "
+            f"y stream GZIP ({GZIP_MAGIC}) desde el byte 2 del campo. El payload de "
+            f"{payload.declared_length} bytes (6 dentro del campo + "
+            f"{remaining // 2} posteriores) fue descomprimido correctamente "
+            f"({payload.decompressed_length} bytes). Todos los bytes de la trama "
+            f"quedan explicados."
         )
+    else:
+        if declared and consumed_hex != declared:
+            warnings.append(
+                f"Longitud declarada ({headers['length_value']} bytes = {declared} hex) "
+                f"no coincide con el contenido analizado ({consumed_hex // 2} bytes = {consumed_hex} hex)."
+            )
+        if remaining > 0:
+            warnings.append(
+                f"Hay {remaining // 2} bytes de datos sin analizar después del último campo."
+            )
+        if payload is not None:
+            warnings.append(
+                f"Posible payload propietario después de DE64 "
+                f"(prefijo {payload.declared_length} bytes + cabecera {GZIP_MAGIC}), "
+                f"pero no puede confirmarse: {payload.reason}"
+            )
 
     emv = None
     for f in fields:
@@ -752,6 +909,7 @@ def _assemble(clean, encoding, headers, fields, issues, consumed_hex, mti_offset
         stats=stats,
         mti_offset_bytes=mti_offset,
         header_hex=headers["header_hex"],
+        trailing_payload=payload,
     )
 
 

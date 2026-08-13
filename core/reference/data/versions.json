@@ -1,0 +1,19 @@
+{
+  "versions": [
+    {"code": "1987", "name": {"en": "ISO 8583:1987", "es": "ISO 8583:1987"},
+     "changes": {"en": "First wide adoption of the standard. Defined the base framework of Fixed and Variable length fields (LLVAR/LLLVAR) and the bitmap layout.", "es": "Primera adopción masiva del estándar. Definió el marco base de campos fijos y variables (LLVAR/LLLVAR) y la disposición de bitmaps."},
+     "advantages": {"en": "Widely deployed, abundant documentation and tooling.", "es": "Ampliamente desplegado, mucha documentación y herramientas."},
+     "compatibility": {"en": "Base for most payment networks; superseded but still present in many proprietary switches.", "es": "Base de la mayoría de redes de pago; superado pero aún presente en muchos switches propietarios."},
+     "usage": {"en": "Still the de-facto base for many acquirers and single-message (e.g. Promerica) networks.", "es": "Sigue siendo la base de facto en muchos adquirentes y redes de mensaje único (p. ej. Promerica)."}},
+    {"code": "1993", "name": {"en": "ISO 8583:1993", "es": "ISO 8583:1993"},
+     "changes": {"en": "Introduced additional maintenance codes, clarifications on the use of variable-length fields and national/private use.", "es": "Introdujo códigos de mantenimiento adicionales, aclaraciones sobre campos de longitud variable y el uso nacional/privado."},
+     "advantages": {"en": "Better descriptions and more fields defined.", "es": "Mejores descripciones y más campos definidos."},
+     "compatibility": {"en": "Mostly backward compatible with 1987 for common messages.", "es": "Mayormente compatible con 1987 en mensajes comunes."},
+     "usage": {"en": "Used by several networks as an intermediate evolution.", "es": "Usado por varias redes como evolución intermedia."}},
+    {"code": "2003", "name": {"en": "ISO 8583:2003", "es": "ISO 8583:2003"},
+     "changes": {"en": "Clarified data elements, added support for extended data types (x+n, x+an) and better binary/hex framing.", "es": "Aclaró los elementos de datos, añadió tipos extendidos (x+n, x+an) y mejor manejo binario."},
+     "advantages": {"en": "More explicit and flexible; recommended modern reference.", "es": "Más explícito y flexible; referencia moderna recomendada."},
+     "compatibility": {"en": "Design to be compatible with prior versions for standard messages.", "es": "Diseñado para ser compatible con versiones previas en mensajes estándar."},
+     "usage": {"en": "The recommended reference for new integrations in many institutions.", "es": "La referencia recomendada para nuevas integraciones en muchas instituciones."}}
+  ]
+}

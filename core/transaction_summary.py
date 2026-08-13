@@ -311,11 +311,4 @@ class TransactionSummary:
         return lines
 
 
-def summarize(result) -> TransactionSummary:
-    """Crea un TransactionSummary para un AnalysisResult."""
-    return TransactionSummary(result)
 
-
-def format_summary(result) -> List[str]:
-    """Líneas de la sección de resumen para un AnalysisResult."""
-    return TransactionSummary(result).format_summary()

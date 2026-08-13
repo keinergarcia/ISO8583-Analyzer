@@ -22,20 +22,6 @@ def all_fields(profile=None):
     return out
 
 
-def field_info(profile, number):
-    fdef = profile.data_element(number)
-    if fdef is None:
-        return None
-    return {
-        "number": fdef.number,
-        "name": fdef.name,
-        "ftype": fdef.ftype,
-        "length_type": fdef.length_type,
-        "max_length": fdef.length,
-        "description": fdef.description,
-    }
-
-
 def search(profile, query):
     """Busca por número, nombre o descripción (sin distinguir mayúsculas)."""
     profile = profile or profile_registry.get_default()

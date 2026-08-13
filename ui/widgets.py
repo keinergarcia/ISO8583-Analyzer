@@ -135,6 +135,11 @@ def add_tlv_rows(container, nodes, depth=0, inherited_indent=0):
             note.setObjectName("emvNote")
             note.setWordWrap(True)
             container.layout.addWidget(note)
+        if node.get("interpretation"):
+            interp = QLabel(f"Interpretación: {node['interpretation']}")
+            interp.setObjectName("emvNote")
+            interp.setWordWrap(True)
+            container.layout.addWidget(interp)
         if node["children"]:
             add_tlv_rows(container, node["children"], depth + 1)
 
@@ -149,6 +154,7 @@ def _as_node(raw):
         "length": raw.length,
         "value_hex": raw.value_hex,
         "note": raw.note,
+        "interpretation": getattr(raw, "interpretation", ""),
         "children": raw.children,
     }
 

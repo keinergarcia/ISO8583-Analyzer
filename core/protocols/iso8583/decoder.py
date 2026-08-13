@@ -8,7 +8,7 @@ descansa sobre la lógica ya probada, sin duplicarla.
 
 from ...issues import IssueList
 from ...model.message import DecodedNode, Message
-from ...parser import ParseError, ParseOptions, parse_message
+from ...parser import ParseOptions, parse_message
 from ...fields import DATA_ELEMENTS
 from ..base import ProtocolDecoder
 from ..registry import register_decoder
@@ -136,6 +136,28 @@ def analysis_to_message(result, profile_name, protocol="iso8583"):
 
     for f in result.fields:
         root.add(_field_node(f))
+
+    if result.trailing_payload is not None:
+        p = result.trailing_payload
+        node = DecodedNode(
+            "Payload posterior", p.kind, kind="group",
+            raw_hex=p.payload_hex,
+            offset_hex=p.offset_hex,
+            length_hex=p.available_length * 2,
+        )
+        if p.status == "confirmed":
+            node.note = (
+                f"Tipo: GZIP · Longitud declarada: {p.declared_length} bytes · "
+                f"Longitud disponible: {p.available_length} bytes · "
+                f"Descomprimido: {p.decompressed_length} bytes"
+            )
+        else:
+            node.note = (
+                f"Posible payload propietario (GZIP) · Declarado: "
+                f"{p.declared_length} bytes · Disponible: {p.available_length} "
+                f"bytes · {p.reason}"
+            )
+        root.add(node)
 
     issues = IssueList()
     for w in result.warnings:

@@ -1,0 +1,2619 @@
+{
+  "fields": [
+    {
+      "number": 1,
+      "name": {
+        "en": "Bitmap",
+        "es": "Mapa de Bits"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE1).",
+        "es": "Campo definido en el estándar ISO 8583 (DE1)."
+      },
+      "data_type": "b",
+      "length_type": "fixed",
+      "min_length": 64,
+      "max_length": 64,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 2,
+      "name": {
+        "en": "Primary Account Number",
+        "es": "Número de Cuenta Principal (PAN)"
+      },
+      "description": {
+        "en": "Principal account number of the cardholder; primary credit/extended identifier.",
+        "es": "Número de cuenta principal de la tarjeta del titular."
+      },
+      "data_type": "n",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 19,
+      "example": "409900000000001234",
+      "example_explanation": {
+        "en": "16-digit PAN",
+        "es": "PAN de 16 dígitos"
+      },
+      "observations": {
+        "en": "Transportado con prefijo de longitud variable (LLVAR) en la trama.",
+        "es": "Se transmite con prefijo de longitud variable (LLVAR)."
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 3,
+      "name": {
+        "en": "Processing Code",
+        "es": "Código de Procesamiento"
+      },
+      "description": {
+        "en": "Processing code defining the transaction type and account(s) to be debited/credited.",
+        "es": "Código de procesamiento que define el tipo de transacción y cuentas a usar."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 6,
+      "max_length": 6,
+      "example": "055000",
+      "example_explanation": {
+        "en": "Sale/Purchase, account A",
+        "es": "Venta normal, cuenta A"
+      },
+      "observations": {
+        "en": "Formato DDAAAC: 2 dígitos tipo, 2 cuenta, 2 orden.",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 4,
+      "name": {
+        "en": "Transaction Amount",
+        "es": "Monto de Transacción"
+      },
+      "description": {
+        "en": "Amount of the transaction in the local currency, last digit of the 12-digit field is the implied decimal position.",
+        "es": "Monto de la transacción en la moneda local; el último dígito es el decimal posicional."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 12,
+      "max_length": 12,
+      "example": "000000012500",
+      "example_explanation": {
+        "en": "1250,00",
+        "es": "1.250,00 en moneda local"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 5,
+      "name": {
+        "en": "Amount, Settlement",
+        "es": "Monto, Liquidación"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE5).",
+        "es": "Campo definido en el estándar ISO 8583 (DE5)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 12,
+      "max_length": 12,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 6,
+      "name": {
+        "en": "Amount, Cardholder Billing",
+        "es": "Monto, Facturación del Titular"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE6).",
+        "es": "Campo definido en el estándar ISO 8583 (DE6)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 12,
+      "max_length": 12,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 7,
+      "name": {
+        "en": "Transmission Date & Time",
+        "es": "Fecha y Hora de Transmisión"
+      },
+      "description": {
+        "en": "Date and time (MMDDHHMMSS) the message transmission was initiated.",
+        "es": "Fecha y hora (MMDDHHMMSS) de inicio de la transmisión del mensaje."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 10,
+      "max_length": 10,
+      "example": "0816123030",
+      "example_explanation": {
+        "en": "08/16 12:30:30",
+        "es": "16/08 12:30:30"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 8,
+      "name": {
+        "en": "Amount, Cardholder Billing Fee",
+        "es": "Comisión, Facturación del Titular"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE8).",
+        "es": "Campo definido en el estándar ISO 8583 (DE8)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 8,
+      "max_length": 8,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 9,
+      "name": {
+        "en": "Conversion Rate, Settlement",
+        "es": "Tasa de Conversión, Liquidación"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE9).",
+        "es": "Campo definido en el estándar ISO 8583 (DE9)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 8,
+      "max_length": 8,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 10,
+      "name": {
+        "en": "Conversion Rate, Cardholder Billing",
+        "es": "Tasa de Conversión, Facturación del Titular"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE10).",
+        "es": "Campo definido en el estándar ISO 8583 (DE10)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 8,
+      "max_length": 8,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 11,
+      "name": {
+        "en": "System Trace Audit Number",
+        "es": "Número de Traza (STAN)"
+      },
+      "description": {
+        "en": "System Trace Audit Number (STAN) — unique transaction reference in the network.",
+        "es": "Número de Auditoría del Sistema (STAN) — referencia única del mensaje."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 6,
+      "max_length": 6,
+      "example": "000159",
+      "example_explanation": {
+        "en": "STAN 159",
+        "es": "STAN 159"
+      },
+      "observations": {
+        "en": "Debe ser único dentro del procesamiento diario.",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 12,
+      "name": {
+        "en": "Time, Local Transaction",
+        "es": "Hora, Transacción Local"
+      },
+      "description": {
+        "en": "Local transaction time (HHMMSS).",
+        "es": "Hora de la transacción local (HHMMSS)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 6,
+      "max_length": 6,
+      "example": "130414",
+      "example_explanation": {
+        "en": "13:04:14",
+        "es": "13:04:14"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 13,
+      "name": {
+        "en": "Date, Local Transaction",
+        "es": "Fecha, Transacción Local"
+      },
+      "description": {
+        "en": "Local transaction date (MMDD).",
+        "es": "Fecha de la transacción local (MMDD)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 4,
+      "max_length": 4,
+      "example": "0918",
+      "example_explanation": {
+        "en": "18/09",
+        "es": "18/09"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 14,
+      "name": {
+        "en": "Date, Card Expiration",
+        "es": "Fecha de Expiración de la Tarjeta"
+      },
+      "description": {
+        "en": "Date on which the card expires (YYMM).",
+        "es": "Fecha de expiración de la tarjeta (AAMM)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 4,
+      "max_length": 4,
+      "example": "2901",
+      "example_explanation": {
+        "en": "01/2029",
+        "es": "enero 2029"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 15,
+      "name": {
+        "en": "Date, Settlement",
+        "es": "Fecha, Liquidación"
+      },
+      "description": {
+        "en": "Date bank ordered settlement (MMDD).",
+        "es": "Fecha en que el banco ordenó la liquidación (MMDD)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 4,
+      "max_length": 4,
+      "example": "0918",
+      "example_explanation": {
+        "en": "18/09",
+        "es": "18/09"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 16,
+      "name": {
+        "en": "Date, Conversion",
+        "es": "Fecha, Conversión"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE16).",
+        "es": "Campo definido en el estándar ISO 8583 (DE16)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 4,
+      "max_length": 4,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 17,
+      "name": {
+        "en": "Date, Capture",
+        "es": "Fecha, Captura"
+      },
+      "description": {
+        "en": "Date of capture (MMDD) of the transaction.",
+        "es": "Fecha de captura (MMDD) de la transacción."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 4,
+      "max_length": 4,
+      "example": "0918",
+      "example_explanation": {
+        "en": "18/09",
+        "es": "18/09"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 18,
+      "name": {
+        "en": "Merchant Type",
+        "es": "Tipo de Comercio (MCC)"
+      },
+      "description": {
+        "en": "Merchant category code / merchant type (MCC).",
+        "es": "Categoría/tipo de comercio (MCC)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 4,
+      "max_length": 4,
+      "example": "5813",
+      "example_explanation": {
+        "en": "Coffee shops",
+        "es": "Restaurantes/cafeterías"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 19,
+      "name": {
+        "en": "Acquiring Institution Country Code",
+        "es": "Código de País de la Institución Adquirente"
+      },
+      "description": {
+        "en": "Country code (ISO 3166) of the acquiring institution branch.",
+        "es": "Código de país (ISO 3166) de la sucursal de la institución adquirente."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "170",
+      "example_explanation": {
+        "en": "Colombia (COP)",
+        "es": "Colombia"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 20,
+      "name": {
+        "en": "PAN Extended Country Code",
+        "es": "Código de País Extendido del PAN"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE20).",
+        "es": "Campo definido en el estándar ISO 8583 (DE20)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 21,
+      "name": {
+        "en": "Forwarding Institution Country Code",
+        "es": "Código de País de la Institución Receptora"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE21).",
+        "es": "Campo definido en el estándar ISO 8583 (DE21)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 22,
+      "name": {
+        "en": "Point of Service Entry Mode",
+        "es": "Modo de Ingreso en el Punto de Servicio"
+      },
+      "description": {
+        "en": "Point of Service entry mode that carried the transaction.",
+        "es": "Modo de ingreso de la transacción en el punto de servicio."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "005",
+      "example_explanation": {
+        "en": "Chip PIN offline",
+        "es": "Chip con PIN"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 23,
+      "name": {
+        "en": "Card Sequence Number",
+        "es": "Número de Secuencia de la Tarjeta"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE23).",
+        "es": "Campo definido en el estándar ISO 8583 (DE23)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 24,
+      "name": {
+        "en": "Network International Identifier (NII)",
+        "es": "Identificador Internacional de Red (NII)"
+      },
+      "description": {
+        "en": "Network International Identifier (NII) that identifies the network.",
+        "es": "Identificador Internacional de Red (NII)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "016",
+      "example_explanation": {
+        "en": "Visa",
+        "es": "Visa"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 25,
+      "name": {
+        "en": "Point of Service Condition Mode",
+        "es": "Modo de Condición del Punto de Servicio"
+      },
+      "description": {
+        "en": "Point of Service condition mode.",
+        "es": "Modo de condición del punto de servicio."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 2,
+      "max_length": 2,
+      "example": "00",
+      "example_explanation": {
+        "en": "Normal",
+        "es": "Normal"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 26,
+      "name": {
+        "en": "Point of Service Capture Code",
+        "es": "Código de Captura del Punto de Servicio"
+      },
+      "description": {
+        "en": "Point of Service capture code indicating the capture capability of the terminal.",
+        "es": "Código de captura del punto de servicio."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 4,
+      "max_length": 4,
+      "example": "12",
+      "example_explanation": {
+        "en": "Terminal can capture",
+        "es": "El terminal puede capturar"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 27,
+      "name": {
+        "en": "Authorizing Identification Response Length",
+        "es": "Longitud de Identificación de Respuesta de Autorización"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE27).",
+        "es": "Campo definido en el estándar ISO 8583 (DE27)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 1,
+      "max_length": 1,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 28,
+      "name": {
+        "en": "Amount, Transaction Fee",
+        "es": "Comisión, Transacción"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE28).",
+        "es": "Campo definido en el estándar ISO 8583 (DE28)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 9,
+      "max_length": 9,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 29,
+      "name": {
+        "en": "Amount, Settlement Fee",
+        "es": "Comisión, Liquidación"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE29).",
+        "es": "Campo definido en el estándar ISO 8583 (DE29)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 9,
+      "max_length": 9,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 30,
+      "name": {
+        "en": "Amount, Transaction Processing Fee",
+        "es": "Comisión, Procesamiento de Transacción"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE30).",
+        "es": "Campo definido en el estándar ISO 8583 (DE30)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 9,
+      "max_length": 9,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 31,
+      "name": {
+        "en": "Amount, Settlement Processing Fee",
+        "es": "Comisión, Procesamiento de Liquidación"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE31).",
+        "es": "Campo definido en el estándar ISO 8583 (DE31)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 9,
+      "max_length": 9,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 32,
+      "name": {
+        "en": "Acquiring Institution Identification Code",
+        "es": "Código de Identificación de la Institución Adquirente"
+      },
+      "description": {
+        "en": "Acquiring institution identification code.",
+        "es": "Código de identificación de la institución adquirente."
+      },
+      "data_type": "n",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 11,
+      "example": "016",
+      "example_explanation": {
+        "en": "Acquirer 016",
+        "es": "Adquirente 016"
+      },
+      "observations": {
+        "en": "Enviado LLVAR.",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 33,
+      "name": {
+        "en": "Sending Institution Identification Code",
+        "es": "Código de Identificación de la Institución Emisora"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE33).",
+        "es": "Campo definido en el estándar ISO 8583 (DE33)."
+      },
+      "data_type": "n",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 11,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 34,
+      "name": {
+        "en": "PAN Extended",
+        "es": "PAN Extendido"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE34).",
+        "es": "Campo definido en el estándar ISO 8583 (DE34)."
+      },
+      "data_type": "n",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 28,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 35,
+      "name": {
+        "en": "Track 2 Data",
+        "es": "Datos de Banda 2 (Track 2)"
+      },
+      "description": {
+        "en": "Track 2 data of the card; (z) left aligned.",
+        "es": "Datos de la banda 2 (Track 2) de la tarjeta."
+      },
+      "data_type": "z",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 37,
+      "example": "409900000000001234=2601100000000000000",
+      "example_explanation": {
+        "en": "Track 2 example",
+        "es": "Ejemplo de banda 2"
+      },
+      "observations": {
+        "en": "Contiene PAN, fecha de expiración y dígitos de verificación.",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 36,
+      "name": {
+        "en": "Track 3 Data",
+        "es": "Datos de Banda 3 (Track 3)"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE36).",
+        "es": "Campo definido en el estándar ISO 8583 (DE36)."
+      },
+      "data_type": "n",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 104,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 37,
+      "name": {
+        "en": "Retrieval Reference Number",
+        "es": "Número de Referencia (RRN)"
+      },
+      "description": {
+        "en": "Retrieval Reference Number (RRN) that references a capture system retrieval.",
+        "es": "Número de Referencia de Recuperación (RRN)."
+      },
+      "data_type": "an",
+      "length_type": "fixed",
+      "min_length": 12,
+      "max_length": 12,
+      "example": "41306B181015",
+      "example_explanation": {
+        "en": "RRN",
+        "es": "RRN"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 38,
+      "name": {
+        "en": "Authorization Identification Response",
+        "es": "Identificación de Respuesta de Autorización"
+      },
+      "description": {
+        "en": "Authorization identification response; code returned by the issuer.",
+        "es": "Identificación de respuesta de autorización del emisor."
+      },
+      "data_type": "an",
+      "length_type": "fixed",
+      "min_length": 6,
+      "max_length": 6,
+      "example": "532401",
+      "example_explanation": {
+        "en": "Auth code",
+        "es": "Código de autorización"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 39,
+      "name": {
+        "en": "Response Code",
+        "es": "Código de Respuesta"
+      },
+      "description": {
+        "en": "Response code indicating the result of a transaction request.",
+        "es": "Código de respuesta que indica el resultado de la transacción."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "00",
+      "example_explanation": {
+        "en": "Approved",
+        "es": "Aprobada"
+      },
+      "observations": {
+        "en": "Consulte el catálogo de Códigos de Respuesta del Centro de Referencia.",
+        "es": "Véase el catálogo de Códigos de Respuesta."
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003",
+        "promerica"
+      ]
+    },
+    {
+      "number": 40,
+      "name": {
+        "en": "Service Restriction Code",
+        "es": "Código de Restricción de Servicio"
+      },
+      "description": {
+        "en": "Service restriction code.",
+        "es": "Código de restricción de servicio."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "125",
+      "example_explanation": {
+        "en": "Restriction",
+        "es": "Restricción"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 41,
+      "name": {
+        "en": "Terminal ID",
+        "es": "ID de Terminal"
+      },
+      "description": {
+        "en": "Terminal identification code of the card acceptor terminal.",
+        "es": "Código de identificación del terminal del comercio."
+      },
+      "data_type": "ans",
+      "length_type": "fixed",
+      "min_length": 8,
+      "max_length": 8,
+      "example": "22210095",
+      "example_explanation": {
+        "en": "Terminal ID",
+        "es": "ID de terminal"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003",
+        "promerica"
+      ]
+    },
+    {
+      "number": 42,
+      "name": {
+        "en": "Merchant ID",
+        "es": "ID de Comercio"
+      },
+      "description": {
+        "en": "Merchant identification code (merchant ID).",
+        "es": "Código de identificación del comercio."
+      },
+      "data_type": "ans",
+      "length_type": "fixed",
+      "min_length": 15,
+      "max_length": 15,
+      "example": "MERCHANT0001",
+      "example_explanation": {
+        "en": "Merchant ID",
+        "es": "ID de comercio"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 43,
+      "name": {
+        "en": "Card Acceptor Name/Location",
+        "es": "Nombre/Ubicación del Aceptador"
+      },
+      "description": {
+        "en": "Name and location of the card acceptor (merchant).",
+        "es": "Nombre y ubicación del aceptador de la tarjeta (comercio)."
+      },
+      "data_type": "ans",
+      "length_type": "fixed",
+      "min_length": 40,
+      "max_length": 40,
+      "example": "TIENDA CENTRAL\\BOGOTACO",
+      "example_explanation": {
+        "en": "Merchant name",
+        "es": "Nombre del comercio"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 44,
+      "name": {
+        "en": "Additional Response Data",
+        "es": "Datos Adicionales de Respuesta"
+      },
+      "description": {
+        "en": "Additional data for response (auth code zone).",
+        "es": "Datos adicionales de respuesta."
+      },
+      "data_type": "an",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 25,
+      "example": "001AUTHCODE",
+      "example_explanation": {
+        "en": "Additional response",
+        "es": "Datos adicionales"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 45,
+      "name": {
+        "en": "Track 1 Data",
+        "es": "Datos de Banda 1 (Track 1)"
+      },
+      "description": {
+        "en": "Track 1 data of the card.",
+        "es": "Datos de la banda 1 (Track 1) de la tarjeta."
+      },
+      "data_type": "an",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 76,
+      "example": "B40990000000001234^PEREZ^09181000000000000",
+      "example_explanation": {
+        "en": "Track 1",
+        "es": "Banda 1"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 46,
+      "name": {
+        "en": "Additional Data - ISO",
+        "es": "Datos Adicionales - ISO"
+      },
+      "description": {
+        "en": "Additional data — ISO defined.",
+        "es": "Datos adicionales — definidos por ISO."
+      },
+      "data_type": "an",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "01ABC",
+      "example_explanation": {
+        "en": "ISO additional",
+        "es": "Adicional ISO"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 47,
+      "name": {
+        "en": "Additional Data - National",
+        "es": "Datos Adicionales - Nacionales"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE47).",
+        "es": "Campo definido en el estándar ISO 8583 (DE47)."
+      },
+      "data_type": "an",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 48,
+      "name": {
+        "en": "Additional Data - Private",
+        "es": "Datos Adicionales - Privados"
+      },
+      "description": {
+        "en": "Additional data — private or national use.",
+        "es": "Datos adicionales — uso privado o nacional."
+      },
+      "data_type": "an",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "D001INFDATA",
+      "example_explanation": {
+        "en": "Datos",
+        "es": "Datos"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 49,
+      "name": {
+        "en": "Currency Code",
+        "es": "Código de Moneda"
+      },
+      "description": {
+        "en": "Currency code (ISO 4217 numeric) of the transaction.",
+        "es": "Código de moneda (ISO 4217) de la transacción."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "170",
+      "example_explanation": {
+        "en": "COP",
+        "es": "COP"
+      },
+      "observations": {
+        "en": "Se interpreta automáticamente en el análisis (170 → Peso colombiano).",
+        "es": "El Centro de Referencia resuelve el código a la moneda."
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 50,
+      "name": {
+        "en": "Currency Code, Settlement",
+        "es": "Código de Moneda, Liquidación"
+      },
+      "description": {
+        "en": "Currency code (ISO 4217) of the settlement.",
+        "es": "Código de moneda (ISO 4217) de la liquidación."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "840",
+      "example_explanation": {
+        "en": "USD",
+        "es": "USD"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 51,
+      "name": {
+        "en": "Currency Code, Cardholder Billing",
+        "es": "Código de Moneda, Facturación del Titular"
+      },
+      "description": {
+        "en": "Currency code (ISO 4217) of the cardholder billing.",
+        "es": "Código de moneda (ISO 4217) de la facturación del titular."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "978",
+      "example_explanation": {
+        "en": "EUR",
+        "es": "EUR"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 52,
+      "name": {
+        "en": "Personal Identification Number Data",
+        "es": "Datos del PIN"
+      },
+      "description": {
+        "en": "Personal Identification Number (PIN) data, encrypted.",
+        "es": "Datos del Número de Identificación Personal (PIN), cifrados."
+      },
+      "data_type": "b",
+      "length_type": "fixed",
+      "min_length": 8,
+      "max_length": 8,
+      "example": "12345A",
+      "example_explanation": {
+        "en": "Cifrado",
+        "es": "Cifrado"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 53,
+      "name": {
+        "en": "Security Related Control Information",
+        "es": "Información de Control de Seguridad"
+      },
+      "description": {
+        "en": "Security related control information (PIN block, key, etc.).",
+        "es": "Información de control relacionada con la seguridad."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 16,
+      "max_length": 16,
+      "example": "1234",
+      "example_explanation": {
+        "en": "Control",
+        "es": "Control"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 54,
+      "name": {
+        "en": "Amount, Cardholder Billing Fee",
+        "es": "Monto, Comisión de Facturación del Titular"
+      },
+      "description": {
+        "en": "Additional amounts in the format: currency, amount (repeating).",
+        "es": "Montos adicionales en formato moneda, monto (repetible)."
+      },
+      "data_type": "an",
+      "length_type": "fixed",
+      "min_length": 24,
+      "max_length": 24,
+      "example": "170000000012500",
+      "example_explanation": {
+        "en": "Fee 1250.00",
+        "es": "Comisión 1.250,00"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 55,
+      "name": {
+        "en": "EMV Data",
+        "es": "Datos EMV"
+      },
+      "description": {
+        "en": "EMV integrated circuit card (IC) system data (TLV). DE55 tags are documented in the analyzer reference.",
+        "es": "Datos EMV del sistema de tarjeta con chip (TLV). Los tags DE55 están documentados en la referencia del analizador."
+      },
+      "data_type": "b",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "9F2608...",
+      "example_explanation": {
+        "en": "EMV TLV",
+        "es": "TLV EMV"
+      },
+      "observations": {
+        "en": "DE55 tags documented: 5F2A, 5F34, 82, 84, 95, 9A, 9B, 9C, 9F02, 9F03, 9F09, 9F10, 9F1A, 9F26, 9F27, 9F33, 9F34, 9F35, 9F36, 9F37, 9F6E, 9F1E, 9F41. Consult TAG_DICTIONARY for details.",
+        "es": "Tags DE55 documentados: 5F2A, 5F34, 82, 84, 95, 9A, 9B, 9C, 9F02, 9F03, 9F09, 9F10, 9F1A, 9F26, 9F27, 9F33, 9F34, 9F35, 9F36, 9F37, 9F6E, 9F1E, 9F41. Consulte TAG_DICTIONARY para detalles."
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 56,
+      "name": {
+        "en": "Reserved for ISO use",
+        "es": "Reservado para uso ISO"
+      },
+      "description": {
+        "en": "Reserved for ISO use.",
+        "es": "Reservado para uso de ISO."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 17,
+      "max_length": 17,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 57,
+      "name": {
+        "en": "Reserved for ISO use",
+        "es": "Reservado para uso ISO"
+      },
+      "description": {
+        "en": "Reserved for ISO use.",
+        "es": "Reservado para uso de ISO."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 58,
+      "name": {
+        "en": "Reserved for ISO use",
+        "es": "Reservado para uso ISO"
+      },
+      "description": {
+        "en": "Reserved for ISO use.",
+        "es": "Reservado para uso de ISO."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 11,
+      "max_length": 11,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 59,
+      "name": {
+        "en": "Reserved for National use",
+        "es": "Reservado para uso Nacional"
+      },
+      "description": {
+        "en": "Reserved for national use.",
+        "es": "Reservado para uso nacional."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 4,
+      "max_length": 4,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 60,
+      "name": {
+        "en": "Reserved National",
+        "es": "Nacional Reservado"
+      },
+      "description": {
+        "en": "Reserved for national use; common in LatAm networks for terminal/network info.",
+        "es": "Reservado para uso nacional; común en redes de Latinoamérica."
+      },
+      "data_type": "n",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "[9220_...]",
+      "example_explanation": {
+        "en": "Datos",
+        "es": "Datos"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003",
+        "promerica"
+      ]
+    },
+    {
+      "number": 61,
+      "name": {
+        "en": "Reserved for National use",
+        "es": "Reservado para uso Nacional"
+      },
+      "description": {
+        "en": "Reserved for national use; often message/approval text.",
+        "es": "Reservado para uso nacional; suele contener texto de la respuesta."
+      },
+      "data_type": "an",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "APROBADO",
+      "example_explanation": {
+        "en": "Aprobado",
+        "es": "Mensaje aprobado"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003",
+        "promerica"
+      ]
+    },
+    {
+      "number": 62,
+      "name": {
+        "en": "Reserved for Private use",
+        "es": "Reservado para uso Privado"
+      },
+      "description": {
+        "en": "Reserved for private use; commonly JSON/XML or voucher links.",
+        "es": "Reservado para uso privado; suele portar JSON/XML o enlaces de voucher."
+      },
+      "data_type": "an",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "https://.../voucher",
+      "example_explanation": {
+        "en": "URL voucher",
+        "es": "URL del voucher"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003",
+        "promerica"
+      ]
+    },
+    {
+      "number": 63,
+      "name": {
+        "en": "Reserved Private",
+        "es": "Privado Reservado"
+      },
+      "description": {
+        "en": "Reserved for private use.",
+        "es": "Reservado para uso privado."
+      },
+      "data_type": "an",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 64,
+      "name": {
+        "en": "MAC",
+        "es": "Código de Autenticación de Mensaje (MAC)"
+      },
+      "description": {
+        "en": "Message authentication code (MAC) of the message.",
+        "es": "Código de Autenticación de Mensaje (MAC)."
+      },
+      "data_type": "b",
+      "length_type": "fixed",
+      "min_length": 8,
+      "max_length": 8,
+      "example": "A1B2C3D4",
+      "example_explanation": {
+        "en": "MAC",
+        "es": "MAC"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 65,
+      "name": {
+        "en": "Bitmap, Extended",
+        "es": "Mapa de Bits Extendido"
+      },
+      "description": {
+        "en": "Extended bitmap of secondary bit positions (65-128).",
+        "es": "Mapa de bits extendido de posiciones secundarias (65-128)."
+      },
+      "data_type": "b",
+      "length_type": "fixed",
+      "min_length": 64,
+      "max_length": 64,
+      "example": "8000000000000000",
+      "example_explanation": {
+        "en": "Bitmap",
+        "es": "Bitmap"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 70,
+      "name": {
+        "en": "Network Management Information Code",
+        "es": "Código de Información de Gestión de Red"
+      },
+      "description": {
+        "en": "Network management information code.",
+        "es": "Código de información de gestión de red."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 3,
+      "max_length": 3,
+      "example": "001",
+      "example_explanation": {
+        "en": "Network",
+        "es": "Red"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 90,
+      "name": {
+        "en": "Original Data Elements",
+        "es": "Elementos de Datos Originales"
+      },
+      "description": {
+        "en": "Original data elements of the original message (reversal/chargeback).",
+        "es": "Elementos de datos originales del mensaje original (reversa)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 42,
+      "max_length": 42,
+      "example": "0200170918130414",
+      "example_explanation": {
+        "en": "Original",
+        "es": "Original"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 91,
+      "name": {
+        "en": "File Update Code",
+        "es": "Código de Actualización de Archivo"
+      },
+      "description": {
+        "en": "File update code.",
+        "es": "Código de actualización de archivo."
+      },
+      "data_type": "an",
+      "length_type": "fixed",
+      "min_length": 1,
+      "max_length": 1,
+      "example": "01",
+      "example_explanation": {
+        "en": "Update",
+        "es": "Actualización"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 92,
+      "name": {
+        "en": "File Security Code",
+        "es": "Código de Seguridad de Archivo"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE92).",
+        "es": "Campo definido en el estándar ISO 8583 (DE92)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 5,
+      "max_length": 5,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 93,
+      "name": {
+        "en": "Response Indicator",
+        "es": "Indicador de Respuesta"
+      },
+      "description": {
+        "en": "Response indicator (response to a file update).",
+        "es": "Indicador de respuesta."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 5,
+      "max_length": 5,
+      "example": "012",
+      "example_explanation": {
+        "en": "Response",
+        "es": "Respuesta"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 94,
+      "name": {
+        "en": "Service Indicator",
+        "es": "Indicador de Servicio"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE94).",
+        "es": "Campo definido en el estándar ISO 8583 (DE94)."
+      },
+      "data_type": "an",
+      "length_type": "fixed",
+      "min_length": 7,
+      "max_length": 7,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 95,
+      "name": {
+        "en": "Replacement Amounts",
+        "es": "Montos de Reemplazo"
+      },
+      "description": {
+        "en": "Replacement amounts.",
+        "es": "Montos de reemplazo."
+      },
+      "data_type": "an",
+      "length_type": "fixed",
+      "min_length": 42,
+      "max_length": 42,
+      "example": "4000000000009001",
+      "example_explanation": {
+        "en": "Replacement",
+        "es": "Reemplazo"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 96,
+      "name": {
+        "en": "Message Security Code",
+        "es": "Código de Seguridad del Mensaje"
+      },
+      "description": {
+        "en": "Message security code.",
+        "es": "Código de seguridad del mensaje."
+      },
+      "data_type": "b",
+      "length_type": "fixed",
+      "min_length": 8,
+      "max_length": 8,
+      "example": "123",
+      "example_explanation": {
+        "en": "Security",
+        "es": "Seguridad"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 97,
+      "name": {
+        "en": "Amount, Net Reconciliation",
+        "es": "Monto Neto de Conciliación"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE97).",
+        "es": "Campo definido en el estándar ISO 8583 (DE97)."
+      },
+      "data_type": "n",
+      "length_type": "fixed",
+      "min_length": 16,
+      "max_length": 16,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 98,
+      "name": {
+        "en": "Payee",
+        "es": "Beneficiario"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE98).",
+        "es": "Campo definido en el estándar ISO 8583 (DE98)."
+      },
+      "data_type": "an",
+      "length_type": "fixed",
+      "min_length": 25,
+      "max_length": 25,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 99,
+      "name": {
+        "en": "Settlement Institution Identification Code",
+        "es": "Código de Identificación de la Institución de Liquidación"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE99).",
+        "es": "Campo definido en el estándar ISO 8583 (DE99)."
+      },
+      "data_type": "n",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 11,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 100,
+      "name": {
+        "en": "Receiving Institution Identification Code",
+        "es": "Código de Identificación de la Institución Receptora"
+      },
+      "description": {
+        "en": "Receiving institution identification code.",
+        "es": "Código de identificación de la institución receptora."
+      },
+      "data_type": "n",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 11,
+      "example": "016",
+      "example_explanation": {
+        "en": "Receiver",
+        "es": "Receptor"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 101,
+      "name": {
+        "en": "File Name",
+        "es": "Nombre de Archivo"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE101).",
+        "es": "Campo definido en el estándar ISO 8583 (DE101)."
+      },
+      "data_type": "ans",
+      "length_type": "fixed",
+      "min_length": 17,
+      "max_length": 17,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 102,
+      "name": {
+        "en": "Account Identification 1",
+        "es": "Identificación de Cuenta 1"
+      },
+      "description": {
+        "en": "Account identification 1.",
+        "es": "Identificación de cuenta 1."
+      },
+      "data_type": "ans",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 28,
+      "example": "4099000000000012",
+      "example_explanation": {
+        "en": "Cuenta 1",
+        "es": "Account 1"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 103,
+      "name": {
+        "en": "Account Identification 2",
+        "es": "Identificación de Cuenta 2"
+      },
+      "description": {
+        "en": "Account identification 2.",
+        "es": "Identificación de cuenta 2."
+      },
+      "data_type": "ans",
+      "length_type": "llvar",
+      "min_length": 1,
+      "max_length": 28,
+      "example": "4099000000000012",
+      "example_explanation": {
+        "en": "Cuenta 2",
+        "es": "Account 2"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 104,
+      "name": {
+        "en": "Transaction Description",
+        "es": "Descripción de Transacción"
+      },
+      "description": {
+        "en": "Transaction description.",
+        "es": "Descripción de la transacción."
+      },
+      "data_type": "ans",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 100,
+      "example": "PAGO DE NOMINA",
+      "example_explanation": {
+        "en": "Descripción",
+        "es": "Descripción"
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 120,
+      "name": {
+        "en": "Relay Data",
+        "es": "Datos de Relevo"
+      },
+      "description": {
+        "en": "Relay data (alias for national/private use).",
+        "es": "Datos de relevo."
+      },
+      "data_type": "ans",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 121,
+      "name": {
+        "en": "Relay Data",
+        "es": "Datos de Relevo"
+      },
+      "description": {
+        "en": "Relay data (national).",
+        "es": "Datos de relevo (nacional)."
+      },
+      "data_type": "ans",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 122,
+      "name": {
+        "en": "Reserved for Private use",
+        "es": "Reservado para uso Privado"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE122).",
+        "es": "Campo definido en el estándar ISO 8583 (DE122)."
+      },
+      "data_type": "ans",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 123,
+      "name": {
+        "en": "Reserved for Private use",
+        "es": "Reservado para uso Privado"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE123).",
+        "es": "Campo definido en el estándar ISO 8583 (DE123)."
+      },
+      "data_type": "ans",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 124,
+      "name": {
+        "en": "Reserved for Private use",
+        "es": "Reservado para uso Privado"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE124).",
+        "es": "Campo definido en el estándar ISO 8583 (DE124)."
+      },
+      "data_type": "ans",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 125,
+      "name": {
+        "en": "Reserved for Private use",
+        "es": "Reservado para uso Privado"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE125).",
+        "es": "Campo definido en el estándar ISO 8583 (DE125)."
+      },
+      "data_type": "ans",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 126,
+      "name": {
+        "en": "Reserved for Private use",
+        "es": "Reservado para uso Privado"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE126).",
+        "es": "Campo definido en el estándar ISO 8583 (DE126)."
+      },
+      "data_type": "ans",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 127,
+      "name": {
+        "en": "Reserved for Private use",
+        "es": "Reservado para uso Privado"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE127).",
+        "es": "Campo definido en el estándar ISO 8583 (DE127)."
+      },
+      "data_type": "ans",
+      "length_type": "lllvar",
+      "min_length": 1,
+      "max_length": 999,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    },
+    {
+      "number": 128,
+      "name": {
+        "en": "Reserved for Private use",
+        "es": "Reservado para uso Privado"
+      },
+      "description": {
+        "en": "Data element defined in the ISO 8583 standard (DE128).",
+        "es": "Campo definido en el estándar ISO 8583 (DE128)."
+      },
+      "data_type": "b",
+      "length_type": "fixed",
+      "min_length": 8,
+      "max_length": 8,
+      "example": "",
+      "example_explanation": {
+        "en": "",
+        "es": ""
+      },
+      "observations": {
+        "en": "",
+        "es": ""
+      },
+      "profiles": [
+        "iso8583_1987",
+        "iso8583_1993",
+        "iso8583_2003"
+      ]
+    }
+  ]
+}

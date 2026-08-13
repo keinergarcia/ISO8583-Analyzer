@@ -28,6 +28,4 @@ def decode_tpdu(hex_str):
     Formato típico: 2 bytes destino, 2 bytes origen, 1 byte control.
     """
     h = (hex_str or "").upper()
-    if len(h) < 10:
-        return TpduInfo(h, len(h) // 2, h[0:4], h[4:8], h[8:10])
     return TpduInfo(h, len(h) // 2, h[0:4], h[4:8], h[8:10])

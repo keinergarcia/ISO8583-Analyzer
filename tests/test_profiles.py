@@ -4,7 +4,6 @@
 import json
 
 from core.profiles import registry
-from core.profiles.model import Profile
 
 
 def test_default_profile():

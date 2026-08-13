@@ -7,14 +7,7 @@ en los Decoder; los datos de cada variante viven en los perfiles.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, Optional
-
-
-@dataclass
-class HeaderField:
-    name: str
-    length_bytes: int
-    encoding: str = "hex"
+from typing import Dict
 
 
 @dataclass

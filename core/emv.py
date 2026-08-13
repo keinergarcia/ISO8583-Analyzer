@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from typing import List
 
 from .converters import bcd_to_decimal
+from .transaction_summary import _format_amount
 
 
 @dataclass
@@ -20,6 +21,7 @@ class TlvNode:
     value_ascii: str
     constructed: bool
     note: str = ""
+    interpretation: str = ""
     children: List["TlvNode"] = field(default_factory=list)
 
     def as_dict(self):
@@ -31,6 +33,7 @@ class TlvNode:
             "value_ascii": self.value_ascii,
             "constructed": self.constructed,
             "note": self.note,
+            "interpretation": self.interpretation,
             "children": [c.as_dict() for c in self.children],
         }
 
@@ -120,11 +123,101 @@ TAG_DICTIONARY = {
     "9F4E": "Merchant Name and Location",
     "9F5A": "Application Program Identifier (API)",
     "9F6B": "Track 2 Equivalent Data",
-    "9F6E": "Form Factor Indicator",
+    "9F6E": "Third Party Data",
     "9F7C": "Merchant Custom Data",
 }
 
 CONSTRUCTED_TAGS = {"6F", "A5", "BF0C", "77", "70", "61", "71", "72", "9F10"}
+
+# Spanish tag names (parallel dictionary for reference/UI display)
+SPANISH_TAGS = {
+    "4F": "Identificador de aplicación",
+    "50": "Etiqueta de aplicación",
+    "57": "Datos equivalentes del Track 2",
+    "5A": "Número principal de cuenta de la aplicación",
+    "5F20": "Código de moneda de aplicación",
+    "5F24": "Fecha de expiración de aplicación",
+    "5F25": "Fecha de efectividad de aplicación",
+    "5F2A": "Código de moneda de la transacción",
+    "5F30": "Código de servicio",
+    "5F34": "Número de secuencia del PAN de la aplicación",
+    "5F50": "URL del emisor",
+    "61": "Plantilla de aplicación",
+    "70": "Plantilla propietaria EMV",
+    "71": "Plantilla de script del emisor 1",
+    "72": "Plantilla de script del emisor 2",
+    "77": "Formato de mensaje de respuesta 2",
+    "82": "Perfil de intercambio de la aplicación",
+    "84": "Nombre de archivo dedicado",
+    "87": "Indicador de prioridad de aplicación",
+    "88": "Identificador de archivo corto",
+    "8A": "Código de respuesta de autorización",
+    "8C": "Lista de objetos de gestión de riesgo de tarjeta 1",
+    "8D": "Lista de objetos de gestión de riesgo de tarjeta 2",
+    "8E": "Lista de métodos de verificación del titular",
+    "8F": "Índice de clave pública de la autoridad de certificación",
+    "90": "Certificado de clave pública del emisor",
+    "91": "Datos de autenticación del emisor",
+    "92": "Resto de la clave pública del emisor",
+    "93": "Datos estáticos de aplicación firmados",
+    "94": "Localizador de archivo de aplicación",
+    "95": "Resultados de verificación del terminal",
+    "9A": "Fecha de la transacción",
+    "9B": "Información del estado de la transacción",
+    "9C": "Tipo de transacción",
+    "9F02": "Importe autorizado",
+    "9F03": "Otro importe",
+    "9F06": "Identificador de aplicación - Terminal",
+    "9F07": "Control de uso de aplicación",
+    "9F09": "Número de versión de la aplicación",
+    "9F0D": "Código de acción del emisor - Default",
+    "9F0E": "Código de acción del emisor - Denegación",
+    "9F0F": "Código de acción del emisor - En línea",
+    "9F10": "Datos de aplicación del emisor",
+    "9F11": "Índice de tabla de códigos del emisor",
+    "9F12": "Nombre preferido de aplicación",
+    "9F13": "Expónente de moneda de aplicación",
+    "9F14": "Expónente de moneda del terminal",
+    "9F15": "Código de categoría de comerciante (MCC)",
+    "9F16": "Identificador de comerciante",
+    "9F17": "Contador de intentos de PIN",
+    "9F18": "Identificador de script del emisor",
+    "9F1A": "Código de país del terminal",
+    "9F1E": "Número de serie del dispositivo de interfaz",
+    "9F1F": "Datos discretos del Track 1",
+    "9F20": "Datos discretos del Track 2",
+    "9F21": "Hora de la transacción",
+    "9F26": "Criptograma de la aplicación",
+    "9F27": "Datos de información del criptograma",
+    "9F2D": "Certificado de clave pública de cifrado PIN ICC",
+    "9F2E": "Expónente de clave pública de cifrado PIN ICC",
+    "9F2F": "Módulo de clave pública de cifrado PIN ICC",
+    "9F32": "Expónente de clave pública del emisor",
+    "9F33": "Capacidades del terminal",
+    "9F34": "Resultados del método de verificación del titular",
+    "9F35": "Tipo de terminal",
+    "9F36": "Contador de transacciones de la aplicación",
+    "9F37": "Número impredecible",
+    "9F40": "Solicitado importe de autorización del emisor",
+    "9F41": "Contador de secuencia de transacciones",
+    "9F42": "Expónente de moneda de aplicación",
+    "9F43": "Moneda de referencia de aplicación",
+    "9F44": "Expónente de moneda de referencia de aplicación",
+    "9F45": "Código de autenticación de datos",
+    "9F46": "Certificado de clave pública ICC",
+    "9F47": "Expónente de clave pública ICC",
+    "9F48": "Módulo de clave pública ICC",
+    "9F49": "Lista de objetos de datos de autenticación dinámica",
+    "9F4A": "Lista de etiquetas de autenticación estática",
+    "9F4B": "Datos dinámicos de aplicación firmados",
+    "9F4C": "Número dinámico ICC",
+    "9F4D": "Entrada de registro",
+    "9F4E": "Nombre y ubicación del comerciante",
+    "9F5A": "Identificador de programa de aplicación",
+    "9F6B": "Datos equivalentes del Track 2",
+    "9F6E": "Datos de terceros",
+    "9F7C": "Datos personalizados del comerciante",
+}
 
 CURRENCIES = {
     "032": "ARS (Peso argentino)",
@@ -154,9 +247,9 @@ TX_TYPES = {
 }
 
 CRYPTOGRAM_INFO = {
-    "00": "ARQC (Solicitud de criptograma en línea)",
+    "00": "AAC (Transacción rechazada)",
     "40": "TC (Transacción completada)",
-    "80": "AAC (Transacción rechazada)",
+    "80": "ARQC (Solicitud de criptograma en línea)",
 }
 
 
@@ -228,6 +321,66 @@ def _interpret(tag, value_hex):
     return ""
 
 
+def _currency_interpret(value_hex):
+    """Interpreta un tag de moneda (5F2A/5F20/9F1A) como '604 → PEN'."""
+    try:
+        digits = bcd_to_decimal(value_hex or "").lstrip("0")
+    except ValueError:
+        return ""
+    name = CURRENCIES.get(digits, "")
+    if not name:
+        return ""
+    code = name.split("(", 1)[0].strip()
+    return f"{digits} → {code}"
+
+
+def interpret_value(tag, value_hex, minor_units=None, currency_code=None):
+    """Interpreta el valor de un tag con más detalle que `_interpret`.
+
+    - 9F02/9F03 (montos): se formatea usando los minor units de la moneda
+      detectada. Sin minor units no se inventa la conversión.
+    - 5F2A/5F20/9F1A (moneda): '840 → USD'.
+    - Resto: mismo resultado que `_interpret`.
+    """
+    tag = (tag or "").upper()
+    if tag in ("9F02", "9F03"):
+        if minor_units is None:
+            return ""
+        try:
+            digits = bcd_to_decimal(value_hex or "")
+        except ValueError:
+            return ""
+        amount = _format_amount(digits, minor_units)
+        if amount is None:
+            return ""
+        if currency_code:
+            return f"{amount} {currency_code}"
+        return amount
+    if tag in ("5F2A", "5F20", "9F1A"):
+        return _currency_interpret(value_hex)
+    return _interpret(tag, value_hex)
+
+
+def enrich_emv_nodes(nodes, currency_code=None, minor_units=None):
+    """Rellena `interpretation` en cada nodo TLV (recursivo)."""
+    for n in nodes or []:
+        n.interpretation = interpret_value(n.tag, n.value_hex,
+                                           minor_units, currency_code)
+        enrich_emv_nodes(n.children, currency_code, minor_units)
+    return nodes
+
+
+def enrich_result_emv(result, currency_code=None, minor_units=None):
+    """Enriquece `result.emv` y refresca los dicts de `f.emv` del DE55."""
+    if not getattr(result, "emv", None):
+        return result
+    enrich_emv_nodes(result.emv, currency_code, minor_units)
+    for f in getattr(result, "fields", []) or []:
+        if getattr(f, "number", None) == 55 and getattr(f, "emv", None):
+            f.emv = [n.as_dict() for n in result.emv]
+    return result
+
+
 def _parse(buf, out):
     i = 0
     while i < len(buf):
@@ -237,7 +390,7 @@ def _parse(buf, out):
         if len(value_hex) < length * 2:
             raise ValueError("TLV truncado (valor incompleto)")
         i += length * 2
-        name = TAG_DICTIONARY.get(tag, "Tag EMV no definido")
+        name = TAG_DICTIONARY.get(tag, "Tag no reconocido")
         children = []
         if constructed and tag in CONSTRUCTED_TAGS:
             try:
