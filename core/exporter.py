@@ -5,7 +5,7 @@ import json
 
 from .currency import detect_currency, detector as currency_detector
 from .emv import enrich_result_emv
-from .field_interpreter import interpret
+from .field_interpreter import interpret, interpret_data
 from .transaction_summary import TransactionSummary
 from .validation import validate_result
 
@@ -163,6 +163,10 @@ def result_to_text(result) -> str:
         if interp.category == "text" and f.value:
             lines.append("Contenido:")
             lines.append(f"{f.value}")
+            jdata = interpret_data(f)
+            if jdata["json_like"]:
+                lines.append("Estructura JSON/lista:")
+                lines.append(jdata["compact"])
         lines.append("")
 
     lines.extend(summary.format_summary())

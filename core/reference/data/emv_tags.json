@@ -1,0 +1,142 @@
+{
+  "emv_tags": [
+    {
+      "tag": "5F2A",
+      "name": {"en": "Transaction Currency Code", "es": "Código de moneda de la transacción"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "5F34",
+      "name": {"en": "Application PAN Sequence Number", "es": "Número de secuencia del PAN de la aplicación"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "82",
+      "name": {"en": "Application Interchange Profile (AIP)", "es": "Perfil de intercambio de la aplicación"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "84",
+      "name": {"en": "Dedicated File Name (DF Name)", "es": "Nombre del archivo dedicado"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "95",
+      "name": {"en": "Terminal Verification Results (TVR)", "es": "Resultados de verificación del terminal"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9A",
+      "name": {"en": "Transaction Date", "es": "Fecha de la transacción"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9B",
+      "name": {"en": "Transaction Status Information (TSI)", "es": "Información del estado de la transacción"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9C",
+      "name": {"en": "Transaction Type", "es": "Tipo de transacción"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F02",
+      "name": {"en": "Amount, Authorised", "es": "Importe autorizado"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F03",
+      "name": {"en": "Amount, Other", "es": "Otro importe"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F09",
+      "name": {"en": "Application Version Number", "es": "Número de versión de la aplicación"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F10",
+      "name": {"en": "Issuer Application Data (IAD)", "es": "Datos de aplicación del emisor"},
+      "length": "12",
+      "value_example": "01 10 A0 40 01 24 00 00 00 00 00 FF"
+    },
+    {
+      "tag": "9F1A",
+      "name": {"en": "Terminal Country Code", "es": "Código de país del terminal"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F26",
+      "name": {"en": "Application Cryptogram", "es": "Criptograma de la aplicación"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F27",
+      "name": {"en": "Cryptogram Information Data (CID)", "es": "Datos de información del criptograma"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F33",
+      "name": {"en": "Terminal Capabilities", "es": "Capacidades del terminal"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F34",
+      "name": {"en": "Cardholder Verification Method (CVM) Results", "es": "Resultados del método de verificación del titular"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F35",
+      "name": {"en": "Terminal Type", "es": "Tipo de terminal"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F36",
+      "name": {"en": "Application Transaction Counter (ATC)", "es": "Contador de transacciones de la aplicación"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F37",
+      "name": {"en": "Unpredictable Number", "es": "Número impredecible"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F6E",
+      "name": {"en": "Third Party Data", "es": "Datos de terceros"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F1E",
+      "name": {"en": "Interface Device (IFD) Serial Number", "es": "Número de serie del dispositivo de interfaz"},
+      "length": "",
+      "value_example": ""
+    },
+    {
+      "tag": "9F41",
+      "name": {"en": "Transaction Sequence Counter", "es": "Contador de secuencia de transacciones"},
+      "length": "",
+      "value_example": ""
+    }
+  ]
+}

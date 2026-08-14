@@ -33,12 +33,13 @@ SECTIONS = [
     ("length_types", "Length Types", "Tipos de Longitud"),
     ("versions", "Versions", "Versiones"),
     ("profiles", "Profiles", "Perfiles"),
+    ("emv_tags", "DE55 EMV Tags (ICC Data)", "Tags EMV DE55 (Datos ICC)"),
 ]
 
 KIND_BADGE = {
     "field": "DE", "mti": "MTI", "response_code": "RC",
     "currency": "ISO 4217", "data_type": "Type", "length_type": "LV",
-    "version": "ISO", "profile": "Profile",
+    "version": "ISO", "profile": "Profile", "emv_tag": "DE55",
 }
 
 CHROME = {
@@ -200,6 +201,8 @@ class ReferenceCenterPanel(QWidget):
             return self.ref.versions()
         if sid == "profiles":
             return self.ref.profiles()
+        if sid == "emv_tags":
+            return sorted(self.ref.emv_tags(), key=lambda e: str(e["tag"]))
         return []
 
     def _render_list(self, sid):
@@ -214,7 +217,7 @@ class ReferenceCenterPanel(QWidget):
             kind = {"fields": "field", "mti": "mti", "response_codes": "response_code",
                     "currencies": "currency", "data_types": "data_type",
                     "length_types": "length_type", "versions": "version",
-                    "profiles": "profile"}[sid]
+                    "profiles": "profile", "emv_tags": "emv_tag"}[sid]
             card.layout.addWidget(self._entry_button(e, kind))
         self._add(card)
 
@@ -287,6 +290,10 @@ class ReferenceCenterPanel(QWidget):
             return f"ISO 8583:{entry.get('code', '')}"
         if kind == "profile":
             return self.ref.loc(entry, "title", lang) or self.ref.loc(entry, "name", "en")
+        if kind == "emv_tag":
+            name = self.ref.loc(entry, "name", lang)
+            other = self.ref.loc(entry, "name", "en" if lang == "es" else "es")
+            return f"Tag {entry['tag']} · {name}  ({other})"
         return str(entry.get("code", ""))
 
     def _entry_button(self, entry, kind):
@@ -351,6 +358,13 @@ class ReferenceCenterPanel(QWidget):
             L += [("Profile", loc(entry, "title", lang) or loc(entry, "name", "en")),
                   ("Description", loc(entry, "description", lang)),
                   ("Notes", loc(entry, "notes", lang))]
+        elif kind == "emv_tag":
+            other = "en" if lang == "es" else "es"
+            L += [("Tag", str(entry.get("tag", ""))),
+                  ("Name", loc(entry, "name", lang)),
+                  ("Name (EN/ES)", loc(entry, "name", other)),
+                  ("Length (bytes)", str(entry.get("length", "")) or "—"),
+                  ("Value example", str(entry.get("value_example", "")) or "—")]
         return L
 
     @staticmethod
@@ -408,10 +422,15 @@ class ReferenceCenterPanel(QWidget):
         else:
             self.open_field(code)
 
+    def open_emv_tag(self, tag):
+        entry = self.ref.emv_tag(tag)
+        if entry:
+            self._open_detail("emv_tag", entry)
+
     def open(self, kind, code):
         method = {"field": "open_field", "mti": "open_mti",
                   "response_code": "open_response_code",
-                  "currency": "open_currency"}.get(kind)
+                  "currency": "open_currency", "emv_tag": "open_emv_tag"}.get(kind)
         if method:
             getattr(self, method)(code)
         else:

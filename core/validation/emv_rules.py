@@ -16,7 +16,7 @@ NO se inventan problemas de la tarjeta ni causas técnicas.
 from typing import Callable, List, Tuple
 
 from ..converters import bcd_to_decimal
-from ..emv import CONSTRUCTED_TAGS, parse_tlv
+from ..emv import CONSTRUCTED_TAGS, _read_length, _read_tag, parse_tlv
 from ..transaction_summary import (
     TransactionSummary,
     _find_field,
@@ -25,43 +25,6 @@ from ..transaction_summary import (
 )
 
 Adder = Callable[..., None]
-
-
-def _read_tag(buf, i):
-    """Lee un tag BER-TLV. Devuelve (tag, constructed, nueva_pos)."""
-    if i + 2 > len(buf):
-        return None, False, i
-    first = int(buf[i:i + 2], 16)
-    i += 2
-    tag = format(first, "02X")
-    if first & 0x1F == 0x1F:
-        while True:
-            if i + 2 > len(buf):
-                return None, bool(first & 0x20), i
-            b = int(buf[i:i + 2], 16)
-            i += 2
-            tag += format(b, "02X")
-            if not (b & 0x80):
-                break
-    return tag, bool(first & 0x20), i
-
-
-def _read_length(buf, i):
-    """Lee la longitud BER-TLV. Devuelve (length, nueva_pos) o lanza ValueError."""
-    if i + 2 > len(buf):
-        raise ValueError("tag-sin-longitud")
-    first = int(buf[i:i + 2], 16)
-    i += 2
-    if first < 0x80:
-        return first, i
-    n = first & 0x7F
-    if n == 0:
-        raise ValueError("longitud-indefinida")
-    if i + n * 2 > len(buf):
-        raise ValueError("prefijo-longitud-truncado")
-    length = int(buf[i:i + n * 2], 16)
-    i += n * 2
-    return length, i
 
 
 def _scan(value_hex: str, out: List[Tuple[str, str]]):
@@ -77,7 +40,7 @@ def _scan(value_hex: str, out: List[Tuple[str, str]]):
         return
     i = 0
     while i < len(buf):
-        tag, constructed, i = _read_tag(buf, i)
+        tag, _, i = _read_tag(buf, i)
         if tag is None:
             out.append(("", "TLV incompleto: faltan bytes del tag."))
             return
@@ -104,7 +67,7 @@ def _scan(value_hex: str, out: List[Tuple[str, str]]):
             return
         i += length * 2
         value_hex = buf[value_start:i]
-        if constructed and tag in CONSTRUCTED_TAGS:
+        if tag in CONSTRUCTED_TAGS:
             _scan(value_hex, out)
             if out:
                 return

@@ -254,35 +254,45 @@ CRYPTOGRAM_INFO = {
 
 
 def _read_tag(buf, i):
+    """Lee un tag BER-TLV. Devuelve (tag, constructed, nueva_pos).
+
+    Si hay menos de un octeto disponible (TLV incompleto por el tag),
+    devuelve `tag=None` en lugar de lanzar, para que el escaneo de
+    validación pueda reportar el problema sin fallar.
+    """
+    if i + 2 > len(buf):
+        return None, False, i
     first = int(buf[i:i + 2], 16)
     i += 2
+    tag = format(first, "02X")
     if first & 0x1F == 0x1F:
-        tag = format(first, "02X")
         while True:
+            if i + 2 > len(buf):
+                return None, bool(first & 0x20), i
             b = int(buf[i:i + 2], 16)
             i += 2
             tag += format(b, "02X")
             if not (b & 0x80):
                 break
-    else:
-        tag = format(first, "02X")
-    constructed = bool(first & 0x20)
-    return tag, constructed, i
+    return tag, bool(first & 0x20), i
 
 
 def _read_length(buf, i):
+    """Lee la longitud BER-TLV. Devuelve (length, nueva_pos) o lanza ValueError."""
+    if i + 2 > len(buf):
+        raise ValueError("tag-sin-longitud")
     first = int(buf[i:i + 2], 16)
     i += 2
     if first < 0x80:
         return first, i
     n = first & 0x7F
     if n == 0:
-        raise ValueError("Longitud indefinida no soportada")
+        raise ValueError("longitud-indefinida")
     if i + n * 2 > len(buf):
-        raise ValueError("Prefijo de longitud truncado")
-    value = int(buf[i:i + n * 2], 16)
+        raise ValueError("prefijo-longitud-truncado")
+    length = int(buf[i:i + n * 2], 16)
     i += n * 2
-    return value, i
+    return length, i
 
 
 def _to_ascii(value_hex):
@@ -385,6 +395,8 @@ def _parse(buf, out):
     i = 0
     while i < len(buf):
         tag, constructed, i = _read_tag(buf, i)
+        if tag is None:
+            raise ValueError("TLV truncado (tag)")
         length, i = _read_length(buf, i)
         value_hex = buf[i:i + length * 2]
         if len(value_hex) < length * 2:
@@ -392,7 +404,12 @@ def _parse(buf, out):
         i += length * 2
         name = TAG_DICTIONARY.get(tag, "Tag no reconocido")
         children = []
-        if constructed and tag in CONSTRUCTED_TAGS:
+        # CONSTRUCTED_TAGS es la fuente autoritativa de tags cuyo valor es una
+        # secuencia TLV (p. ej. 6F, A5, 9F10), independientemente del bit
+        # "construido" del propio tag (el primer octeto de 9F10 es 0x9F, cuyo
+        # bit 0x20 está a 0 pese a ser un template construido según EMV).
+        effective_constructed = constructed or tag in CONSTRUCTED_TAGS
+        if effective_constructed:
             try:
                 _parse(value_hex, children)
             except ValueError:
@@ -404,7 +421,7 @@ def _parse(buf, out):
             length=length,
             value_hex=value_hex,
             value_ascii=_to_ascii(value_hex),
-            constructed=constructed,
+            constructed=effective_constructed,
             note=note,
             children=children,
         )

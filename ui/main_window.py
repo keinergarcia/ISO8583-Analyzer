@@ -33,7 +33,7 @@ from core import api, converters
 from core.currency import detector as currency_detector
 from core.emv import enrich_result_emv
 from core.exporter import result_to_json, result_to_text
-from core.field_interpreter import interpret
+from core.field_interpreter import interpret, interpret_data
 from core.fields import translate
 from core.history import HistoryManager
 from core.mti import MTI_DESCRIPTIONS
@@ -955,6 +955,19 @@ class MainWindow(QMainWindow):
             value_row.addWidget(CopyButton(lambda f=f: f.value, "Copiar valor"))
         value_row.addStretch(1)
         card.layout.addLayout(value_row)
+
+        if f.value:
+            jdata = interpret_data(f)
+            if jdata["json_like"]:
+                json_title = QLabel("JSON / lista (interpretación estructural)")
+                json_title.setObjectName("muted")
+                card.layout.addWidget(json_title)
+                json_label = QLabel(jdata["pretty"])
+                json_label.setObjectName("jsonPreview")
+                json_label.setTextFormat(Qt.PlainText)
+                json_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+                json_label.setWordWrap(True)
+                card.layout.addWidget(json_label)
 
         if f.number in (49, 50, 51) and f.value and f.value.strip().isdigit():
             cur = api.reference_currency(f.value.strip())

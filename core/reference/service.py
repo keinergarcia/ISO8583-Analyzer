@@ -24,6 +24,7 @@ CATALOGS = {
     "data_types": "data_types",
     "length_types": "length_types",
     "profiles": "profiles",
+    "emv_tags": "emv_tags",
 }
 
 LANGS = ("en", "es")
@@ -123,6 +124,16 @@ class ReferenceService:
     def profiles(self, lang=None):
         return list(self._catalog("profiles"))
 
+    def emv_tag(self, tag, lang=None):
+        tag = str(tag).strip().upper()
+        for e in self._catalog("emv_tags"):
+            if str(e["tag"]).strip().upper() == tag:
+                return e
+        return None
+
+    def emv_tags(self, lang=None):
+        return list(self._catalog("emv_tags"))
+
     # ----------------------------------------------------------- búsqueda
     def search(self, query, lang="es", limit=60):
         q = _norm(query)
@@ -180,6 +191,11 @@ class ReferenceService:
                     _norm(self.loc(e, "name", "es")) + _norm(self.loc(e, "title", "es")))
             if q in blob:
                 append({"kind": "profile", "code": str(e.get("name", "")), "entry": e})
+
+        for e in self._catalog("emv_tags"):
+            if (q == _norm(str(e["tag"])) or
+                    q in _norm(self.loc(e, "name", "en") + self.loc(e, "name", "es"))):
+                append({"kind": "emv_tag", "code": str(e["tag"]), "entry": e})
 
         return hits[:limit]
 

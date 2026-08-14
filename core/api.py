@@ -198,6 +198,16 @@ def reference_service():
     return _get_reference()
 
 
+def reference_emv_tags(lang="es"):
+    """Catálogo de tags EMV del DE55 (ICC Data), bilingüe es/en."""
+    return _get_reference().emv_tags()
+
+
+def reference_emv_tag(tag, lang="es"):
+    """Devuelve la ficha de un tag EMV del DE55 por su código (ej. '9F10')."""
+    return _get_reference().emv_tag(tag)
+
+
 __all__ = [
     "Message", "DecodedNode", "IssueList", "ValidationIssue",
     "ParseError", "ParseOptions", "parse_message",
@@ -209,6 +219,7 @@ __all__ = [
     "reference_response_code", "reference_currency", "reference_versions",
     "reference_data_types", "reference_length_types", "reference_profiles",
     "reference_languages", "reference_currencies", "reference_service",
+    "reference_emv_tags", "reference_emv_tag",
     "pick_profile",
     "session", "converters",
 ]

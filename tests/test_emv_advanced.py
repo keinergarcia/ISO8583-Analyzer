@@ -11,8 +11,9 @@ la estructura TLV del DE55 es inválida.
 """
 
 import json
+import pytest
 
-from core.emv import enrich_result_emv
+from core.emv import enrich_result_emv, parse_tlv
 from core.exporter import result_to_json, result_to_text
 from core.parser import ParseOptions, parse_message
 from core.transaction_summary import TransactionSummary
@@ -354,3 +355,57 @@ def test_reporte_json_con_interpretacion():
     emv_nodes = {n["tag"]: n for n in data["emv"]}
     assert emv_nodes["5F2A"]["interpretation"] == "840 → USD"
     assert emv_nodes["9F02"]["interpretation"] == "3.36 USD"
+
+
+# ---------------------------------------------------------------------------
+# 11. Regresión: 9F10 como template construido según EMV (BER-TLV compartido)
+# ---------------------------------------------------------------------------
+
+def test_9f10_construido_descubre_subtags():
+    """9F10 (IAD) contiene sub-TLVs: debe recursarse pese al bit BER 0x00."""
+    tlv = "9F100E9F360200219F0206000000010000"
+    nodes = parse_tlv(tlv)
+    assert len(nodes) == 1
+    node = nodes[0]
+    assert node.tag == "9F10"
+    assert node.length == 14
+    assert node.value_hex == "9F360200219F0206000000010000"
+    assert node.constructed is True
+    assert [c.tag for c in node.children] == ["9F36", "9F02"]
+    assert node.children[0].value_hex == "0021"
+    assert node.children[1].value_hex == "000000010000"
+
+
+def test_9f10_valido_no_genera_error():
+    """La estructura TLV con 9F10 anidado se valida sin hallazgos de error."""
+    tlv = "9F100E9F360200219F0206000000010000"
+    r = validate_result(parse_message(_make_frame(emv_hex=tlv), _opts()))
+    assert "EMV_TLV_VALID" in _codes(r, SEVERITY_INFO)
+    assert "INVALID_EMV_TLV" not in _codes(r)
+
+
+def test_tag_construido_generico_recursa():
+    """La recursión es genérica (CONSTRUCTED_TAGS), no una excepción por tag."""
+    tlv = "6F09" + "8407A0000000031010"
+    nodes = parse_tlv(tlv)
+    assert nodes[0].tag == "6F"
+    assert nodes[0].constructed is True
+    assert [c.tag for c in nodes[0].children] == ["84"]
+    assert nodes[0].children[0].value_hex == "A0000000031010"
+
+
+def test_reader_ber_tlv_comun_truncado():
+    """Fuente única BER-TLV: tag truncado → None; longitudes → ValueError."""
+    from core.emv import _read_length, _read_tag
+    tag, _, _ = _read_tag("9F", 0)
+    assert tag is None
+    with pytest.raises(ValueError, match="longitud-indefinida"):
+        _read_length("80", 0)
+    with pytest.raises(ValueError, match="tag-sin-longitud"):
+        _read_length("9F10", 4)
+
+
+def test_parse_tlv_truncado_en_tag_lanza():
+    """parse_tlv conserva su contrato: lanza ValueError en TLV incompleto."""
+    with pytest.raises(ValueError, match="TLV truncado"):
+        parse_tlv("9F")

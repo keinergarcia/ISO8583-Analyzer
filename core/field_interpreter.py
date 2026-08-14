@@ -166,3 +166,74 @@ def interpreter():
 def interpret(field):
     """Interpreta un campo usando el intérprete por defecto."""
     return interpreter().interpret(field)
+
+
+def is_json_like(value):
+    """True si el valor (que ya es ASCII/texto) es JSON/lista estructural.
+
+    Nunca intenta convertir el valor como si fuera HEX: solo valida que sea un
+    JSON válido. El byte 5F (guion bajo) se conserva literal, sin escapar.
+    """
+    if not value or not hasattr(value, "strip"):
+        return False
+    stripped = str(value).strip()
+    if not stripped.startswith(("[", "{")):
+        return False
+    try:
+        json.loads(stripped)
+        return True
+    except (ValueError, TypeError):
+        return False
+
+
+def interpret_data(field):
+    """Interpreta estructuralmente un campo cuyo valor es JSON/lista.
+
+    Reglas:
+    - Usa el valor ya decodificado (ASCII) por el parser; NUNCA lo reconvierte
+      con una función HEX → string (evita el error de conversión de DE63).
+    - No escapa guiones bajos: JSON conserva '_' tal como viene del byte 5F.
+    - Si no es JSON/lista devuelve raw sin tocar. Nunca lanza excepción.
+
+    Devuelve un dict:
+      value, json_like, parsed, pretty, compact
+    """
+    if hasattr(field, "value"):
+        raw_val = field.value
+    else:
+        raw_val = field
+    if not isinstance(raw_val, str):
+        raw_val = str(raw_val or "")
+    raw = raw_val
+    if not is_json_like(raw):
+        return {
+            "value": raw,
+            "json_like": False,
+            "parsed": None,
+            "pretty": raw,
+            "compact": raw,
+        }
+    stripped = raw.strip()
+    try:
+        parsed = json.loads(stripped)
+    except (ValueError, TypeError):
+        return {
+            "value": raw,
+            "json_like": False,
+            "parsed": None,
+            "pretty": raw,
+            "compact": raw,
+        }
+    try:
+        pretty = json.dumps(parsed, ensure_ascii=False, indent=2)
+        compact = json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
+    except (TypeError, ValueError):
+        pretty = raw
+        compact = stripped
+    return {
+        "value": raw,
+        "json_like": True,
+        "parsed": parsed,
+        "pretty": pretty,
+        "compact": compact,
+    }

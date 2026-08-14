@@ -58,7 +58,8 @@ def test_ascii_remaining_warning():
 
 def test_decode_emv():
     msg = api.decode(FRAME_EMV)
-    assert sum(1 for n in msg.walk() if n.kind == "tlv") == 8
+    # 9 (antes 8): el 9F10 anidado de FRAME_EMV ahora expone su sub-tag 9F26.
+    assert sum(1 for n in msg.walk() if n.kind == "tlv") == 9
     assert 55 in msg.active_fields
 
 

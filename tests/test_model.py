@@ -28,8 +28,9 @@ def test_decode_basic_tree():
 
 def test_decode_emv_tree():
     msg = api.decode(FRAME_EMV)
+    # 9 (antes 8): el 9F10 de FRAME_EMV expone el sub-tag 9F26 parseado.
     tlvs = [n for n in msg.walk() if n.kind == "tlv"]
-    assert len(tlvs) == 8
+    assert len(tlvs) == 9
     tags = {n.label.split()[0] for n in tlvs}
     assert "9F26" in tags and "8202" in tags or "82" in tags
 
