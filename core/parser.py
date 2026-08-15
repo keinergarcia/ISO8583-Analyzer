@@ -43,6 +43,7 @@ class ParseOptions:
     llvar_prefix_bytes: int = 1       # bytes para prefijo LLVAR en BCD (1=estándar, 2=algunas redes)
     lllvar_prefix_bytes: int = 2      # bytes para prefijo LLLVAR en BCD (2=estándar, 3=algunas redes)
     lllvar_4digit_bcd: bool = False   # prefijo LLLVAR de 2 bytes como BCD completo de 4 dígitos (no 3)
+    bcd_padding: str = "trailing"     # "trailing"=nibble de relleno al final | "leading"=nibble de relleno al inicio
     field_defs: Optional[dict] = None  # definiciones de campos del perfil (None = diccionario embebido)
 
 
@@ -305,14 +306,44 @@ def _read_len_digits_ascii(h, pos, length_type, debug=None):
     return value, npos
 
 
-def _bcd_to_digits(raw_hex, digits):
+def _bcd_to_digits(raw_hex, digits, padding="trailing"):
+    """Convierte un campo numérico BCD a su valor (hex de dígitos).
+
+    La posición del nibble de relleno en campos de dígitos impares depende de
+    la red: con padding "trailing" el valor ocupa los nibbles más
+    significativos y el nibble final es relleno (se descarta); con padding
+    "leading" el valor va alineado a la derecha y el primer nibble es relleno
+    (se descarta). El relleno NO forma parte del valor en ninguno de los dos
+    casos. El padding es una propiedad del perfil/encoding, no una suposición
+    universal del estándar.
+    """
     s = raw_hex.upper()
     if digits % 2 == 1 and s:
-        # Longitud de dígitos impar: el último nibble del byte final es
-        # siempre relleno (F, 0 o cualquier valor) y no forma parte del
-        # valor. Se descarta siempre, no solo cuando el relleno es 'F'.
-        s = s[:-1]
+        if padding == "leading":
+            # Valor alineado a la derecha: el primer nibble es relleno.
+            s = s[1:]
+        else:
+            # Valor alineado a la izquierda: el último nibble es relleno.
+            s = s[:-1]
     return s
+
+
+def _z_to_track2(raw_hex):
+    """Decodifica Track 2 (z) empacado en BCD: cada nibble es un carácter.
+
+    Los dígitos se conservan, 'D' es el separador '=' y 'F' es el nibble de
+    relleno final, que se descarta (no forma parte del valor). No aplica
+    ningún cambio de padding: el relleno de Track 2 siempre es 'F' final.
+    """
+    out = []
+    for c in (raw_hex or "").upper():
+        if c == "D":
+            out.append("=")
+        elif c == "F":
+            continue
+        else:
+            out.append(c)
+    return "".join(out)
 
 
 def _hex_to_text(raw_hex, ftype):
@@ -346,10 +377,14 @@ def _take_bytes(h, pos, nbytes):
 
 
 def _read_field_bcd(h, pos, fdef, issues, debug=None, llvar_bytes=1, lllvar_bytes=2,
-                    lllvar_4digit=False):
+                    lllvar_4digit=False, padding="trailing"):
     start = pos
     if fdef.length_type == "fixed":
         if fdef.is_numeric:
+            digits = fdef.length
+            nbytes = (digits + 1) // 2
+        elif fdef.ftype == "z":
+            # Track 2 fijo (nibbles por carácter).
             digits = fdef.length
             nbytes = (digits + 1) // 2
         else:
@@ -357,14 +392,16 @@ def _read_field_bcd(h, pos, fdef, issues, debug=None, llvar_bytes=1, lllvar_byte
             digits = fdef.length
         raw, pos = _take_bytes(h, pos, nbytes)
         if fdef.is_numeric:
-            value = _bcd_to_digits(raw, digits)
+            value = _bcd_to_digits(raw, digits, padding)
+        elif fdef.ftype == "z":
+            value = _z_to_track2(raw)
         else:
             value = _hex_to_text(raw, fdef.ftype)
         return _build_field(fdef, digits, value, raw, start), pos
     length_digits, pos = _read_len_digits_bcd(h, pos, fdef.length_type, debug,
                                                llvar_bytes=llvar_bytes, lllvar_bytes=lllvar_bytes,
                                                lllvar_4digit=lllvar_4digit)
-    return _read_field_data(h, pos, fdef, length_digits, issues, start)
+    return _read_field_data(h, pos, fdef, length_digits, issues, start, padding)
 
 
 def _read_field_ascii(h, pos, fdef, issues, debug=None):
@@ -386,18 +423,24 @@ def _read_field_ascii(h, pos, fdef, issues, debug=None):
     return _read_field_data_ascii(h, pos, fdef, length_digits, issues, start)
 
 
-def _read_field_data(h, pos, fdef, length_digits, issues, start):
+def _read_field_data(h, pos, fdef, length_digits, issues, start, padding="trailing"):
     if length_digits > fdef.length:
         issues.append(
             f"DE{fdef.number}: la longitud del campo ({length_digits}) supera el máximo ({fdef.length})."
         )
     if fdef.is_numeric:
         nbytes = (length_digits + 1) // 2
+    elif fdef.ftype == "z":
+        # Track 2 (z) va empacado en BCD: cada nibble es un carácter, con un
+        # nibble de relleno 'F' final para longitudes impares.
+        nbytes = (length_digits + 1) // 2
     else:
         nbytes = length_digits
     raw, pos = _take_bytes(h, pos, nbytes)
     if fdef.is_numeric:
-        value = _bcd_to_digits(raw, length_digits)
+        value = _bcd_to_digits(raw, length_digits, padding)
+    elif fdef.ftype == "z":
+        value = _z_to_track2(raw)
     else:
         value = _hex_to_text(raw, fdef.ftype)
     return _build_field(fdef, length_digits, value, raw, start), pos
@@ -527,7 +570,8 @@ def _score_offset(clean, off, opts, encoding):
                                            llvar_bytes=opts.llvar_prefix_bytes,
                                            lllvar_bytes=opts.lllvar_prefix_bytes,
                                            field_defs=opts.field_defs,
-                                           lllvar_4digit=opts.lllvar_4digit_bcd)
+                                           lllvar_4digit=opts.lllvar_4digit_bcd,
+                                           padding=opts.bcd_padding)
     if any(f.has_error for f in fields):
         score -= 20
     else:
@@ -654,7 +698,8 @@ def _parse_headers(clean, opts, errors, encoding="bcd"):
 # ---------------------------------------------------------------------------
 
 def _read_fields_hex(clean, headers, encoding, issues, errors, debug=None,
-                     llvar_bytes=1, lllvar_bytes=2, field_defs=None, lllvar_4digit=False):
+                     llvar_bytes=1, lllvar_bytes=2, field_defs=None, lllvar_4digit=False,
+                     padding="trailing"):
     """Lee todos los campos activos. Devuelve (fields, pos, active)."""
     pos = headers["pos"]
     if debug is None:
@@ -693,7 +738,7 @@ def _read_fields_hex(clean, headers, encoding, issues, errors, debug=None,
             else:
                 field, pos = _read_field_bcd(clean, pos, fdef, issues,
                                              llvar_bytes=llvar_bytes, lllvar_bytes=lllvar_bytes,
-                                             lllvar_4digit=lllvar_4digit)
+                                             lllvar_4digit=lllvar_4digit, padding=padding)
             fields.append(field)
         except ParseError as exc:
             fields.append(
@@ -934,7 +979,8 @@ def _parse_bcd(clean, opts):
                                              llvar_bytes=opts.llvar_prefix_bytes,
                                              lllvar_bytes=opts.lllvar_prefix_bytes,
                                              field_defs=opts.field_defs,
-                                             lllvar_4digit=opts.lllvar_4digit_bcd)
+                                             lllvar_4digit=opts.lllvar_4digit_bcd,
+                                             padding=opts.bcd_padding)
     consumed_hex = pos - headers["data_start_hex"]
     if opts.debug and debug:
         report_parse_debug(debug)
@@ -961,7 +1007,8 @@ def _parse_hybrid(clean, opts):
                                              llvar_bytes=opts.llvar_prefix_bytes,
                                              lllvar_bytes=opts.lllvar_prefix_bytes,
                                              field_defs=opts.field_defs,
-                                             lllvar_4digit=opts.lllvar_4digit_bcd)
+                                             lllvar_4digit=opts.lllvar_4digit_bcd,
+                                             padding=opts.bcd_padding)
     consumed_hex = pos - headers["data_start_hex"]
     if opts.debug and debug:
         report_parse_debug(debug)

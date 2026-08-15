@@ -27,6 +27,7 @@ class Profile:
     llvar_prefix_bytes: int = 1
     lllvar_prefix_bytes: int = 2
     lllvar_4digit_bcd: bool = False
+    bcd_padding: str = "trailing"  # "trailing" | "leading": posición del nibble de relleno BCD
 
     def data_element(self, number):
         return self.elements.get(number)
@@ -51,4 +52,5 @@ class Profile:
             "llvar_prefix_bytes": self.llvar_prefix_bytes,
             "lllvar_prefix_bytes": self.lllvar_prefix_bytes,
             "lllvar_4digit_bcd": self.lllvar_4digit_bcd,
+            "bcd_padding": self.bcd_padding,
         }

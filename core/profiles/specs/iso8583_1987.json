@@ -189,7 +189,7 @@
     "26": {
       "name": "Point of Service Capture Code",
       "ftype": "n",
-      "length": 4,
+      "length": 2,
       "length_type": "fixed",
       "description": "Point of Service Capture Code"
     },

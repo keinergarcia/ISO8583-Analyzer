@@ -27,6 +27,12 @@ class DecodedNode:
     kind: str = "field"
     offset_hex: int = 0
     length_hex: int = 0
+    tag: str = ""
+    name_es: str = ""
+    value_ascii: str = ""
+    constructed: bool = False
+    interpretation: str = ""
+    tlv_length: int = 0
     children: List["DecodedNode"] = field(default_factory=list)
 
     def add(self, node: "DecodedNode") -> "DecodedNode":
@@ -42,6 +48,12 @@ class DecodedNode:
             "kind": self.kind,
             "offset_hex": self.offset_hex,
             "length_hex": self.length_hex,
+            "tag": self.tag,
+            "name_es": self.name_es,
+            "value_ascii": self.value_ascii,
+            "constructed": self.constructed,
+            "interpretation": self.interpretation,
+            "tlv_length": self.tlv_length,
             "children": [c.as_dict() for c in self.children],
         }
 

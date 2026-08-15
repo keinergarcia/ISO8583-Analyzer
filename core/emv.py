@@ -20,6 +20,7 @@ class TlvNode:
     value_hex: str
     value_ascii: str
     constructed: bool
+    name_es: str = ""
     note: str = ""
     interpretation: str = ""
     children: List["TlvNode"] = field(default_factory=list)
@@ -28,6 +29,7 @@ class TlvNode:
         return {
             "tag": self.tag,
             "name": self.name,
+            "name_es": self.name_es,
             "length": self.length,
             "value_hex": self.value_hex,
             "value_ascii": self.value_ascii,
@@ -368,7 +370,13 @@ def interpret_value(tag, value_hex, minor_units=None, currency_code=None):
         return amount
     if tag in ("5F2A", "5F20", "9F1A"):
         return _currency_interpret(value_hex)
-    return _interpret(tag, value_hex)
+    result = _interpret(tag, value_hex)
+    if result:
+        return result
+    # Tags no catalogados: no se inventa interpretación; se informa que no
+    # hay disponible. Para tags conocidos sin interpretación se conserva ""
+    # (mismo contrato que _interpret).
+    return "No disponible" if tag not in TAG_DICTIONARY else ""
 
 
 def enrich_emv_nodes(nodes, currency_code=None, minor_units=None):
@@ -403,6 +411,7 @@ def _parse(buf, out):
             raise ValueError("TLV truncado (valor incompleto)")
         i += length * 2
         name = TAG_DICTIONARY.get(tag, "Tag no reconocido")
+        name_es = SPANISH_TAGS.get(tag) or name
         children = []
         # CONSTRUCTED_TAGS es la fuente autoritativa de tags cuyo valor es una
         # secuencia TLV (p. ej. 6F, A5, 9F10), independientemente del bit
@@ -418,11 +427,13 @@ def _parse(buf, out):
         node = TlvNode(
             tag=tag,
             name=name,
+            name_es=name_es,
             length=length,
             value_hex=value_hex,
             value_ascii=_to_ascii(value_hex),
             constructed=effective_constructed,
             note=note,
+            interpretation=interpret_value(tag, value_hex),
             children=children,
         )
         out.append(node)

@@ -74,7 +74,7 @@ for _item in [
     (23, "Card Sequence Number", "n", 3),
     (24, "Network International Identifier (NII)", "n", 3),
     (25, "Point of Service Condition Mode", "n", 2),
-    (26, "Point of Service Capture Code", "n", 4),
+    (26, "Point of Service Capture Code", "n", 2),
     (27, "Authorizing Identification Response Length", "n", 1),
     (28, "Amount, Transaction Fee", "n", 9),
     (29, "Amount, Settlement Fee", "n", 9),

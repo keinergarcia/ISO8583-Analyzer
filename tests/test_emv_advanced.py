@@ -13,6 +13,7 @@ la estructura TLV del DE55 es inválida.
 import json
 import pytest
 
+import core.api as api
 from core.emv import enrich_result_emv, parse_tlv
 from core.exporter import result_to_json, result_to_text
 from core.parser import ParseOptions, parse_message
@@ -409,3 +410,38 @@ def test_parse_tlv_truncado_en_tag_lanza():
     """parse_tlv conserva su contrato: lanza ValueError en TLV incompleto."""
     with pytest.raises(ValueError, match="TLV truncado"):
         parse_tlv("9F")
+
+
+def _walk_nodes(nodes):
+    """Recorre nodos (dicts) en profundidad."""
+    for n in nodes:
+        yield n
+        yield from _walk_nodes(n.get("children", []))
+
+
+def test_decode_emv_tag_desconocido_no_se_pierde():
+    """Un tag EMV desconocido no desaparece ni rompe el parsing: conserva
+    Tag/Length/Value y recibe Name EN/ES 'Tag no reconocido' e
+    Interpretation 'No disponible', tanto en result.emv como en el árbol
+    Message. api.decode() es autosuficiente (sin enrich externo)."""
+    frame = _make_frame(emv_hex="9F0206000000000336" + "E003112233",
+                        de49=None)
+    msg = api.decode(frame, "promerica")
+    r = msg.legacy
+    assert not r.errors
+    assert not r.warnings
+    assert [n.tag for n in r.emv] == ["9F02", "E0"]
+    e0 = r.emv[1]
+    assert e0.value_hex == "112233"
+    assert e0.length == 3
+    assert e0.name == "Tag no reconocido"
+    assert e0.name_es == "Tag no reconocido"
+    assert e0.interpretation == "No disponible"
+
+    tree = {n.get("tag"): n for n in _walk_nodes([msg.as_dict()["root"]])
+            if n.get("kind") == "tlv"}
+    assert tree["E0"]["value"] == "112233"
+    assert tree["E0"]["name_es"] == "Tag no reconocido"
+    assert tree["E0"]["interpretation"] == "No disponible"
+    assert tree["E0"]["tlv_length"] == 3
+    assert tree["9F02"]["value"] == "000000000336"

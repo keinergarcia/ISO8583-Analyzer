@@ -12,6 +12,41 @@ from tests.fixtures.frames import FRAME_BASIC, FRAME_PROMERICA, FRAME_PROMERICA_
 
 PROMERICA_PROFILE = "promerica"
 
+# Trama 0200 completa de la red Promerica (autorización, real): cabeceras
+# binarias + campos BCD. LLVAR de 1 byte (DE32/35), LLLVAR de 2 bytes con
+# BCD de 4 dígitos (DE48/55/60/63/112/114/119/120/127) y padding leading.
+# Longitud 01be = 446 bytes. DE55 = 149 bytes con 21 TLV.
+FRAME_PROMERICA_0200 = (
+    "01be60000180000200b038464120c182"
+    "10000000000001430200300000000000"
+    "03360000661206000817554100520000"
+    "0606179130376262893000001204d240"
+    "92011000079600000f32303131303334"
+    "31303030303030383731373033202020"
+    "00103935303645435543544108400149"
+    "9f26081ad085579ef40b059f2701809f"
+    "101307010103a0a002010a0100000000"
+    "00ee04e0409f370454ee45a29f360204"
+    "0f9505008000e0009a032308179c0100"
+    "9f02060000000003365f2a0208408202"
+    "7c009f1a0202189f0306000000000000"
+    "9f3303e0f8c89f34031e03009f350121"
+    "9f1e0832303039343336308408a00000"
+    "03330101029f090200209f4104000000"
+    "665f340100008430334d323430323030"
+    "30363030303330303030303030303030"
+    "30303132443236303030303030303030"
+    "30333030323138303030303030303030"
+    "30553233303230303036303030333030"
+    "30303030303030303030310012303035"
+    "30303630343033303000063030303034"
+    "31002430303030303030303033303030"
+    "30303030303030303030300014313130"
+    "30303030303030303033360035463030"
+    "30324630313130322e332e352e323430"
+    "37463032313039323230303934333630"
+)
+
 
 def _field_defs():
     defs = dict(DATA_ELEMENTS)
@@ -259,3 +294,96 @@ def test_promerica_debug_prints_field_details(capsys):
         assert "bytes consumidos " in out
         assert "bytes restantes " in out
     assert "DE64 nota: Cabecera GZIP" in out
+
+
+def test_promerica_0200_completa_cadena():
+    """Cadena completa de la trama 0200 real: pick_profile → TPDU → MTI →
+    Bitmap → DE3...DE55 → TLV DE55 → DE60...DE127. 446/446 bytes, 0 errores
+    y 0 warnings."""
+    assert api.pick_profile(FRAME_PROMERICA_0200) == PROMERICA_PROFILE
+    msg = api.decode(FRAME_PROMERICA_0200, profile_name=PROMERICA_PROFILE)
+    r = msg.legacy
+    assert r.tpdu.hex == "6000018000"
+    assert r.mti.hex == "0200"
+    assert r.bitmap_primary_hex == "b038464120c18210"
+    assert r.bitmap_secondary_hex == "0000000000014302"
+    assert r.consumed_hex == r.declared_hex
+    assert r.declared_hex // 2 == 446
+    assert not r.errors
+    assert not r.warnings
+    fields = {f.number: f for f in r.fields}
+    assert [f.number for f in r.fields] == [
+        3, 4, 11, 12, 13, 18, 22, 23, 26, 32, 35, 41, 42, 48, 49, 55,
+        60, 112, 114, 119, 120, 127,
+    ]
+    expected = {
+        3: "003000", 4: "000000000336", 11: "000066", 12: "120600",
+        13: "0817", 18: "5541", 22: "052", 23: "000", 26: "06",
+        32: "179130", 35: "6262893000001204=24092011000079600000",
+        41: "20110341", 42: "000000871703   ", 48: "9506ECUCTA", 49: "840",
+        60: "03M24020006000300000000000012D2600000000003002180000000000"
+            "U2302000600030000000000001",
+        112: "005006040300", 114: "000041",
+        119: "000000000300000000000000", 120: "11000000000036",
+        127: "F0002F01102.3.5.2407F02109220094360",
+    }
+    for num, val in expected.items():
+        assert fields[num].value == val, f"DE{num}"
+    f55 = fields[55]
+    assert f55.length_digits == 149
+    assert not f55.has_error
+    assert [getattr(n, "tag") for n in r.emv] == [
+        "9F26", "9F27", "9F10", "9F37", "9F36", "95", "9A", "9C", "9F02",
+        "5F2A", "82", "9F1A", "9F03", "9F33", "9F34", "9F35", "9F1E", "84",
+        "9F09", "9F41", "5F34",
+    ]
+
+
+def _walk_nodes(nodes):
+    """Recorre nodos (dicts) en profundidad."""
+    for n in nodes:
+        yield n
+        yield from _walk_nodes(n.get("children", []))
+
+
+def test_decode_0200_de55_21_tlv_autosuficiente():
+    """api.decode() entrega el árbol EMV completo y autosuficiente: 21 TLV
+    con Tag + Length + Value HEX + Value ASCII + Name EN/ES + Interpretación
+    + Constructed + Children, sin depender de enrich_result_emv (UI/exporter).
+    El árbol Message y result.emv contienen la misma información."""
+    msg = api.decode(FRAME_PROMERICA_0200, profile_name=PROMERICA_PROFILE)
+    r = msg.legacy
+    assert len(r.emv) == 21
+    for n in r.emv:
+        assert n.tag
+        assert n.length == len(n.value_hex) // 2 > 0
+        assert n.value_hex
+        assert isinstance(n.value_ascii, str)
+        assert n.name
+        assert n.name_es
+        assert isinstance(n.constructed, bool)
+        assert isinstance(n.interpretation, str)
+    by_tag = {n.tag: n for n in r.emv}
+    assert by_tag["9F26"].name == "Application Cryptogram"
+    assert by_tag["9F26"].name_es == "Criptograma de la aplicación"
+    assert by_tag["9F26"].interpretation == "Criptograma de la aplicación"
+    assert by_tag["5F2A"].interpretation == "840 → USD"
+    assert by_tag["9F02"].interpretation == "3.36 USD"
+    assert by_tag["9F10"].value_hex == "07010103A0A002010A010000000000EE04E040"
+    assert by_tag["9F10"].children == []
+
+    tree = {n.get("tag"): n for n in _walk_nodes([msg.as_dict()["root"]])
+            if n.get("kind") == "tlv"}
+    assert len(tree) == 21
+    for n in r.emv:
+        t = tree[n.tag]
+        assert t["value"] == n.value_hex
+        assert t["name_es"] == n.name_es
+        assert t["interpretation"] == n.interpretation
+        assert t["tlv_length"] == n.length
+        assert t["constructed"] == n.constructed
+        assert t["note"] == n.note
+    assert tree["9F26"]["name_es"] == "Criptograma de la aplicación"
+    assert tree["9F26"]["tlv_length"] == 8
+    assert tree["5F2A"]["interpretation"] == "840 → USD"
+    assert tree["9F02"]["interpretation"] == "3.36 USD"

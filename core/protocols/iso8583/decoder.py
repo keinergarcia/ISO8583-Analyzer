@@ -40,6 +40,12 @@ def _tlv_from_dict(raw):
         raw_hex=raw.get("value_hex", ""),
         note=raw.get("note", ""),
         kind="tlv",
+        tag=raw.get("tag", ""),
+        name_es=raw.get("name_es", ""),
+        value_ascii=raw.get("value_ascii", ""),
+        constructed=bool(raw.get("constructed", False)),
+        interpretation=raw.get("interpretation", ""),
+        tlv_length=int(raw.get("length", 0) or 0),
     )
     for child in raw.get("children", []):
         node.children.append(_tlv_from_dict(child))
@@ -185,6 +191,27 @@ def analysis_to_message(result, profile_name, protocol="iso8583"):
     )
 
 
+def _enrich_emv(result):
+    """Enriquece la interpretación EMV con la moneda del propio mensaje.
+
+    Best-effort: `api.decode()` no depende de que la UI o el exporter llamen
+    después a `enrich_result_emv`. Si el mensaje no permite derivar moneda o
+    minor units (p. ej. tramas sin DE49/5F2A), se conservan las
+    interpretaciones básicas ya presentes en cada nodo TLV.
+    """
+    try:
+        from ...currency import detect_currency
+        from ...emv import enrich_result_emv
+        rep = detect_currency(result)
+        src = rep.primary or rep.emv or rep.secondary
+        if src is not None:
+            enrich_result_emv(result,
+                              getattr(src, "currency", None),
+                              getattr(src, "minor_units", None))
+    except Exception:
+        pass
+
+
 @register_decoder
 class ISO8583Decoder(ProtocolDecoder):
     protocol_id = "iso8583"
@@ -200,6 +227,7 @@ class ISO8583Decoder(ProtocolDecoder):
             llvar_prefix_bytes=getattr(profile, "llvar_prefix_bytes", 1),
             lllvar_prefix_bytes=getattr(profile, "lllvar_prefix_bytes", 2),
             lllvar_4digit_bcd=getattr(profile, "lllvar_4digit_bcd", False),
+            bcd_padding=getattr(profile, "bcd_padding", "trailing"),
             field_defs=field_defs,
         )
         if options is not None:
@@ -224,7 +252,10 @@ class ISO8583Decoder(ProtocolDecoder):
                 opts.lllvar_prefix_bytes = options.lllvar_prefix_bytes
             if getattr(options, "lllvar_4digit_bcd", None) not in (None, False):
                 opts.lllvar_4digit_bcd = options.lllvar_4digit_bcd
+            if getattr(options, "bcd_padding", None) not in (None, "trailing"):
+                opts.bcd_padding = options.bcd_padding
             if getattr(options, "field_defs", None):
                 opts.field_defs = options.field_defs
         result = parse_message(raw, opts)
+        _enrich_emv(result)
         return analysis_to_message(result, profile.name, profile.protocol)

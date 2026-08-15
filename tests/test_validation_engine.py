@@ -365,9 +365,9 @@ def test_formato_reporte():
 # Reporte del usuario (trama QA real del historial) y casos derivados
 # ---------------------------------------------------------------------------
 
-# Trama completa del reporte: prefijo de longitud 01bd, DE12=256099, DE32
-# con prefijo LLVAR de 1 byte que supera el máximo y desincroniza el parseo
-# bajo el perfil Promerica (prefijos de 2 bytes).
+# Trama completa del reporte: prefijo de longitud 01bd, DE12=256099. Con el
+# diccionario corregido (DE26 n2, padding leading) los campos DE3..DE55 se
+# alinean y el DE55 de 149 bytes decodifica 21 TLV EMV (5F2A=0170 COP).
 FRAME_QA = (
     "01bd60000180000200b038464120c18210000000000001430200300000000000"
     "033600006625609908175541005200000606179130376262893000001204d240"
@@ -389,23 +389,77 @@ FRAME_QA = (
 def test_padding_nibble_stripped():
     """Los campos numéricos BCD de longitud impar llevan un nibble de relleno
     que no forma parte del valor: DE22/DE23/DE49 no deben reportar longitud
-    incorrecta ni '4 dígitos en campo de 3'."""
-    result = parse_message(FRAME_QA, ParseOptions(numeric_encoding="bcd"))
+    incorrecta ni '4 dígitos en campo de 3'. Esta red usa padding "leading"
+    (valor alineado a la derecha): DE22 00 52 → 052 y DE49 08 40 → 840."""
+    opts = ParseOptions(numeric_encoding="bcd", lllvar_4digit_bcd=True,
+                        bcd_padding="leading")
+    result = parse_message(FRAME_QA, opts)
     values = {f.number: f.value for f in result.fields}
-    assert values[22] == "005"
+    assert values[22] == "052"
     assert values[23] == "000"
-    assert values[49] == "353"
+    assert values[26] == "06"
+    assert values[32] == "179130"
+    assert values[49] == "840"
     r = validate_result(result)
     assert "INVALID_FIELD_LENGTH" not in [f.code for f in r.findings
                                           if f.field in ("DE22", "DE23", "DE49")]
 
 
+def test_de35_conserva_padding_f_y_no_leading():
+    """DE35 (z/Track 2) usa su propio relleno: 'F' final. El cambio de padding
+    leading para campos numéricos NO debe alterar su tratamiento."""
+    opts = ParseOptions(numeric_encoding="bcd", lllvar_4digit_bcd=True,
+                        bcd_padding="leading")
+    result = parse_message(FRAME_QA, opts)
+    f35 = next(f for f in result.fields if f.number == 35)
+    assert f35.value == "6262893000001204=24092011000079600000"
+    # El relleno 'F' se conserva en el hex crudo pero no forma parte del valor.
+    assert f35.raw_hex.endswith("F")
+    assert "F" not in f35.value
+
+
+def test_de55_completo_149_bytes_21_tlv():
+    """DE55 (EMV, 149 bytes) se decodifica completo con sus 21 TLV."""
+    opts = ParseOptions(numeric_encoding="bcd", lllvar_4digit_bcd=True,
+                        bcd_padding="leading")
+    result = parse_message(FRAME_QA, opts)
+    f55 = next(f for f in result.fields if f.number == 55)
+    assert not f55.has_error
+    assert f55.length_digits == 149
+    assert len(f55.raw_hex) == 149 * 2
+    assert result.emv is not None
+    tags = [getattr(n, "tag") for n in result.emv]
+    assert tags == [
+        "9F26", "9F27", "9F10", "9F37", "9F36", "95", "9A", "9C", "9F02",
+        "5F2A", "82", "9F1A", "9F03", "9F33", "9F34", "9F35", "9F1E", "84",
+        "9F09", "9F41", "5F34",
+    ]
+
+
+def test_real_frame_5f2a_0840_usd():
+    """5F2A = 0840 se interpreta como 840 → USD (trama real del usuario)."""
+    from core.currency import detect_currency
+    opts = ParseOptions(numeric_encoding="bcd", lllvar_4digit_bcd=True,
+                        bcd_padding="leading")
+    result = parse_message(FRAME_USUARIO, opts)
+    values = {f.number: f.value for f in result.fields}
+    assert values[49] == "840"
+    rep = detect_currency(result)
+    assert rep.emv is not None
+    assert rep.emv.code == "840"
+    assert rep.emv.currency == "USD"
+
+
 def test_parse_stop_single_warning_no_cascade():
     """DE32 con longitud imposible: se reporta el error raíz y una única
-    advertencia PARSING_STOPPED, sin cascada de errores por campos posteriores."""
+    advertencia PARSING_STOPPED, sin cascada de errores por campos posteriores.
+
+    La trama real del usuario está truncada; bajo el perfil de prefijos LLVAR
+    de 2 bytes el prefijo de DE32 (0617 = 617 dígitos) supera los datos
+    disponibles y el parser se detiene en DE32."""
     opts = ParseOptions(numeric_encoding="bcd", llvar_prefix_bytes=2,
                         lllvar_prefix_bytes=2, lllvar_4digit_bcd=True)
-    r = validate_result(parse_message(FRAME_QA, opts))
+    r = validate_result(parse_message(FRAME_USUARIO, opts))
     codes = _codes(r)
     # Error raíz: DE32 no pudo decodificarse.
     assert "INVALID_FIELD_LENGTH" in codes
@@ -426,10 +480,10 @@ def test_findings_have_stage_and_derived_from():
                         lllvar_prefix_bytes=2, lllvar_4digit_bcd=True)
     r = validate_result(parse_message(FRAME_QA, opts))
     stop = next(f for f in r.findings
-                if f.code == "PARSING_STOPPED_AFTER_DE32")
+                if f.code == "PARSING_STOPPED_AFTER_DE35")
     assert stop.stage == "parse"
-    assert stop.derived_from == "DE32"
-    root = next(f for f in r.errors if f.field == "DE32")
+    assert stop.derived_from == "DE35"
+    root = next(f for f in r.errors if f.field == "DE35")
     assert root.stage == "parse"
     assert root.derived_from is None
     time = next(f for f in r.errors if f.code == "INVALID_TIME")

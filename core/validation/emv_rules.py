@@ -68,6 +68,15 @@ def _scan(value_hex: str, out: List[Tuple[str, str]]):
         i += length * 2
         value_hex = buf[value_start:i]
         if tag in CONSTRUCTED_TAGS:
+            # Un tag construido solo se recorre como secuencia TLV si su
+            # contenido realmente lo es. Si no (p. ej. 9F10 con bytes opacos),
+            # se trata como contenido opaco, con el mismo criterio que
+            # core.emv._parse (que en ese caso no genera children). Evita
+            # falsos positivos por re-parsificar bytes que ya se procesaron.
+            try:
+                parse_tlv(value_hex)
+            except ValueError:
+                continue
             _scan(value_hex, out)
             if out:
                 return

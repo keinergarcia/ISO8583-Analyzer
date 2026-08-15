@@ -10,9 +10,10 @@
   "mti_length_bytes": 2,
   "bitmap_length_bytes": 8,
   "supports_secondary_bitmap": true,
-  "llvar_prefix_bytes": 2,
+  "llvar_prefix_bytes": 1,
   "lllvar_prefix_bytes": 2,
   "lllvar_4digit_bcd": true,
+  "bcd_padding": "leading",
   "elements": {
     "39": {
       "name": "Response Code",
@@ -32,7 +33,7 @@
       "name": "Reserved National",
       "ftype": "an",
       "length": 999,
-      "length_type": "llvar",
+      "length_type": "lllvar",
       "description": "Reserved National (ASCII, prefijo 2 bytes)"
     },
     "61": {
@@ -45,6 +46,34 @@
     "62": {
       "name": "Reserved for Private use",
       "ftype": "an",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use (ASCII, prefijo 2 bytes)"
+    },
+    "63": {
+      "name": "Reserved Private",
+      "ftype": "an",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved Private (ASCII, prefijo 2 bytes)"
+    },
+    "112": {
+      "name": "Reserved for Private use",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use (ASCII, prefijo 2 bytes)"
+    },
+    "114": {
+      "name": "Reserved for Private use",
+      "ftype": "ans",
+      "length": 999,
+      "length_type": "lllvar",
+      "description": "Reserved for Private use (ASCII, prefijo 2 bytes)"
+    },
+    "119": {
+      "name": "Reserved for Private use",
+      "ftype": "ans",
       "length": 999,
       "length_type": "lllvar",
       "description": "Reserved for Private use (ASCII, prefijo 2 bytes)"

@@ -82,6 +82,7 @@ def profile_from_dict(data):
         llvar_prefix_bytes=int(data.get("llvar_prefix_bytes", 1)),
         lllvar_prefix_bytes=int(data.get("lllvar_prefix_bytes", 2)),
         lllvar_4digit_bcd=bool(data.get("lllvar_4digit_bcd", False)),
+        bcd_padding=str(data.get("bcd_padding", "trailing")),
     )
 
 
